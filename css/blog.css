@@ -1,0 +1,43 @@
+#blog a {
+  text-decoration: none !important;
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: default;
+}
+#sv {
+  display: none;
+}
+#forma {
+  display: none;
+}
+#forma .title,
+#forma .text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#forma .text {
+  height: 60px;
+}
+#forma #error {
+  color: red;
+  font-weight: bold;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 7px;
+}
+.post {
+  background-color: #fff;
+  width: 100%;
+  min-height: 100px;
+  border: 1px solid #dcdcdc;
+}
+.post .title {
+  width: 100%;
+  height: 40px;
+  font-size: 20px;
+  border: 1px solid #0f131f;
+}
+/*# sourceMappingURL=blog.css.map */

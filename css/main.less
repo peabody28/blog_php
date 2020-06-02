@@ -1,0 +1,80 @@
+body
+{
+ // background-image: url("/media/bg.png");
+  min-height: 100vh;
+  margin: 0px 0px 5px 0px;
+  font-family: 'Roboto', sans-serif;
+}
+
+#header
+{
+ 
+  margin: 0;
+  background-color: #303B44;
+  justify-content: space-between;
+  align-items: center;
+  @media (max-width: 576px)
+  {
+    justify-content: center;
+  }
+  #logo
+  {
+    color: white;
+    font-size: 35px;
+    font-family: 'Bangers', cursive;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .header_a
+  {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 17px;
+
+    a
+    {
+      color: white;
+      //text-decoration: underline;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      :visited
+      {
+        text-decoration: none;
+        color: white;
+      }
+    }
+  }
+  #exit
+  {
+    button{
+      font-weight: 600;
+      background-color: #f1f1f1;
+      border: none;
+    }
+    button:hover{
+      cursor: pointer;
+    }
+  }
+
+}
+
+#wr
+{
+  width: 100%;
+  display: flex;
+  min-height: 900px;
+  justify-content: center;
+  #content
+  {
+    padding: 20px;
+    min-height: 100%;
+    background-color: #f1f1f1;
+    border-top: none;
+  }
+}
+
