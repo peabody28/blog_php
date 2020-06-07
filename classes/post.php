@@ -28,23 +28,6 @@ class post
                     <div class='text'>$this->text</div>
                 </div><br>"];
     }
-    function get()
-    {
-        R::selectDatabase( 'posts' );
-        $us = R::findAll('posts', 'author = ?', [$this->author]);
-        if(!$us)
-            return ["STATUS" => "ERROR", "ERROR"=>"Нет записей"];
-        R::selectDatabase( 'default' );
-        $resp = [];
-        foreach ($us as $u) {
-                $resp[] = "
-                <div class='post'>
-                    <div class='title'>$u->title <span style='opacity: 0.6'>@$u->author</span></div>
-                    <div class='text'>$u->text</div>
-                </div><br>";
-        }
-        return ["STATUS" => "OK", "TEXT"=>$resp];
-    }
     function change_author()
     {
         R::selectDatabase( 'posts' );

@@ -61,10 +61,6 @@ switch($data["code"])
         $user = new user($data["fr_name"]);
         $resp = $user->add_friend();
         break;
-
-    case "get_wall":
-        $post = new post($data["author"]);
-        $resp = $post->get();
 }
 
 echo json_encode($resp);

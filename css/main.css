@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'Roboto';
+  src: url("/media/fonts/roboto/Roboto-Regular.ttf");
+}
+@font-face {
+  font-family: 'Bangers';
+  src: url("/media/fonts/Bangers/Bangers-Regular.ttf");
+}
 body {
   min-height: 100vh;
   margin: 0px 0px 5px 0px;
