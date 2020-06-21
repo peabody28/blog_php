@@ -3,6 +3,7 @@
 class post
 {
     public $title, $text, $author;
+
     function __construct($author, $title=false, $text=false)
     {
         $this->author = $author;

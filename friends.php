@@ -2,12 +2,13 @@
 session_start();
 if (!isset($_SESSION["name"]))
     if (!isset($_COOKIE['name']))
-        header("Location: http://127.0.0.2/login.php");
+        header("Location: /login.php");
     else
         $_SESSION["name"]=$_COOKIE['name'];
 
-require "libs/redbeanphp/db.php";
-require "classes/render_template.php";
+require "db.php";
+require_once "vendor/autoload.php";
+
 
 $content = "
 <form method='post'>
@@ -31,6 +32,11 @@ foreach ($fr_list as $fr)
                 <br>";
 $content .= "<div id='wall'></div>";
 
-$t = new render_template("templates/main.html", ["main", "/css/friends.css", $content, "/js/friends.js"]);
-echo $t->render();
+$loader = new Twig_Loader_Filesystem(__DIR__.'/templates');
+$twig = new Twig_Environment($loader);
+
+echo $twig->render('main.html',
+    ['title'=>"main", 'css'=>"/css/friends.css",
+        'content'=>$content, "js"=>"/js/friends.js"] );
+
 

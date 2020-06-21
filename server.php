@@ -1,12 +1,13 @@
 <?php
 session_start();
 
-require "libs/redbeanphp/db.php";
+require_once "db.php";
 require_once("classes/user.php");
 require_once("classes/post.php");
 
 $data = $_REQUEST;
-
+if(!$data)
+    exit("no, no, no");
 switch($data["code"])
 {
     case "login":
@@ -60,6 +61,10 @@ switch($data["code"])
     case "add_friend":
         $user = new user($data["fr_name"]);
         $resp = $user->add_friend();
+        break;
+    case "get_wall":
+        $user = new user($data["name"]);
+        $resp = $user->get_wall();
         break;
 }
 

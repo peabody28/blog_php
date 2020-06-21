@@ -41,7 +41,8 @@ class user
         return $find_user ? ["STATUS" => "OK"]:["STATUS" => "ERROR", "ERROR" => "Пользователь не найден"];
     }
 
-    function rename(){
+    function rename()
+    {
         if(!$this->name)
             return ["STATUS" => "ERROR", "ERROR" => "Заполните все поля"];
 
@@ -80,5 +81,23 @@ class user
         $user->friends = $user->friends.",".$this->name.",";
         R::store($user);
         return ["STATUS"=>"OK", "NEW_FR"=>$this->name];
+    }
+
+    function get_wall()
+    {
+        R::selectDatabase( 'posts' );
+        $posts = R::findAll( 'posts', 'author = ?', [$this->name] );
+        R::selectDatabase( 'default' );
+
+        $wall = "";
+        if(!$posts)
+            $wall = "Нет записей";
+        else
+            foreach ($posts as $post)
+                $wall .= "<div class='post'>
+                        <div class='title'>$post->title <span style='opacity: 0.6'>@$post->author</span></div>
+                        <div class='text'>$post->text</div>
+                    </div><br>";
+        return $wall;
     }
 }

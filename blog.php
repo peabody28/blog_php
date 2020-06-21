@@ -2,12 +2,12 @@
 session_start();
 if (!isset($_SESSION["name"]))
     if (!isset($_COOKIE['name']))
-        header("Location: http://127.0.0.2/login.php");
+        header("Location: /login.php");
     else
         $_SESSION["name"]=$_COOKIE['name'];
 
-require "libs/redbeanphp/db.php";
-require "classes/render_template.php";
+require "db.php";
+require "vendor/autoload.php";
 
 $content = "<button id='add'>Добавить запись</button>
          <button id='sv'>Свернуть</button>
@@ -37,6 +37,10 @@ foreach ($posts as $post)
                     <div class='text'>$post->text</div>
                 </div><br>";
 
-$t = new render_template("templates/main.html", ["blog", "/css/blog.css", $content, "/js/blog.js"]);
-echo $t->render();
+$loader = new Twig_Loader_Filesystem(__DIR__.'/templates');
+$twig = new Twig_Environment($loader);
+
+echo $twig->render('main.html',
+    ['title'=>"blog", 'css'=>"/css/blog.css",
+        'content'=>$content, "js"=>"/js/blog.js"] );
 

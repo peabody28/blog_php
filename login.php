@@ -1,8 +1,10 @@
 <?php
-require "classes/render_template.php";
+require_once "vendor/autoload.php";
 
-$t = new render_template("templates/login.html",
-    ["login", "АВТОРИЗАЦИЯ", "login", "ВХОД", "/signup.php", "Регистрация", "/js/in.js"]);
+$loader = new Twig_Loader_Filesystem(__DIR__.'/templates');
+$twig = new Twig_Environment($loader);
 
-echo $t->render();
+echo $twig->render('login.html',
+    ['title'=>"login", 'nm'=>"АВТОРИЗАЦИЯ", 'code'=>"login",
+        'btn_text'=>"ВХОД", 'a_href'=>"/signup.php", 'a_text'=>"Регистрация", 'js'=>"/js/in.js"] );
 ?>
