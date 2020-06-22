@@ -2,8 +2,8 @@
 require_once "vendor/autoload.php";
 
 
-$loader = new Twig_Loader_Filesystem(__DIR__.'/templates');
-$twig = new Twig_Environment($loader);
+$loader = new Twig\Loader\FilesystemLoader(__DIR__.'/templates');
+$twig = new Twig\Environment($loader);
 
 echo $twig->render('login.html',
  ['title'=>"signup", 'nm'=>"РЕГИСТРАЦИЯ", 'code'=>"signup",

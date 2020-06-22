@@ -4,13 +4,14 @@ class post
 {
     public $title, $text, $author;
 
-    function __construct($author, $title=false, $text=false)
+   public function __construct($author, $title=false, $text=false)
     {
         $this->author = $author;
         $this->title = $title;
         $this->text = $text;
     }
-    function add()
+
+    public function add()
     {
         if(!($this->title and $this->text))
             return ["STATUS" => "ERROR", "ERROR" => "Заполните все поля"];
@@ -29,7 +30,8 @@ class post
                     <div class='text'>$this->text</div>
                 </div><br>"];
     }
-    function change_author()
+
+    public function change_author()
     {
         R::selectDatabase( 'posts' );
         $us = R::findAll('posts', 'author = ?', [$_SESSION["name"]]);

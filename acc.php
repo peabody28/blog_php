@@ -24,8 +24,8 @@ $content = "<form id='dl' method='POST'>
             <br>
             <div id=\"hh\"></div>";
 
-$loader = new Twig_Loader_Filesystem(__DIR__.'/templates');
-$twig = new Twig_Environment($loader);
+$loader = new Twig\Loader\FilesystemLoader(__DIR__.'/templates');
+$twig = new Twig\Environment($loader);
 
 echo $twig->render('main.html',
     ['title'=>"acc", 'css'=>"/css/acc.css",

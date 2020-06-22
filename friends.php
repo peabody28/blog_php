@@ -6,12 +6,12 @@ if (!isset($_SESSION["name"]))
     else
         $_SESSION["name"]=$_COOKIE['name'];
 
-require "db.php";
+require_once "db.php";
 require_once "vendor/autoload.php";
 
 
 $content = "
-<form method='post'>
+<form id='add_f' method='post'>
     <input type='text' name='fr_name'>
     <input type='hidden' name='code' value='add_friend'>
     <button type='submit'>add</button>
@@ -19,21 +19,27 @@ $content = "
 <div id='mess'></div>
 <br>
 <br>
-";
+<div id='wall'>";
 
-$db = R::findOne('user', 'name = ?', [$_SESSION["name"]]);
-preg_match_all('/,(.+?),/',$db->friends, $m);
+
+$user = R::findOne('user', 'name = ?', [$_SESSION["name"]]);
+preg_match_all('/,(.+?),/', $user->friends, $m);
 $fr_list = $m[1];
 
 foreach ($fr_list as $fr)
     $content .= "<div class='friend'>
-                    <button class='fr' type='button'>$fr</button>
-                </div>
-                <br>";
-$content .= "<div id='wall'></div>";
+                    <button class='fr' type='button'>$fr</button> 
+                    <form method='POST'>
+                       <input type='hidden' name='name' value=\"$fr\">
+                        <input type='hidden' name='code' value='remove_from_friends'>
+                        <button type='submit' onclick='del(\"$fr\"); return false;'>удалить</button>
+                    </form>
+                    <br>
+                </div>";
+$content .= "</div>";
 
-$loader = new Twig_Loader_Filesystem(__DIR__.'/templates');
-$twig = new Twig_Environment($loader);
+$loader = new Twig\Loader\FilesystemLoader(__DIR__.'/templates');
+$twig = new Twig\Environment($loader);
 
 echo $twig->render('main.html',
     ['title'=>"main", 'css'=>"/css/friends.css",

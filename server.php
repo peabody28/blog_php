@@ -8,6 +8,7 @@ require_once("classes/post.php");
 $data = $_REQUEST;
 if(!$data)
     exit("no, no, no");
+
 switch($data["code"])
 {
     case "login":
@@ -15,7 +16,7 @@ switch($data["code"])
         $resp = $user->search();
         if($resp["STATUS"]==="OK")
             $_SESSION['name'] = $user->name;
-        if($data["check"])
+        if(isset($data["check"]))
             setcookie("name", $user->name, time()+3600*24*365);
         break;
 
@@ -29,8 +30,11 @@ switch($data["code"])
         break;
 
     case "delete":
-        $user = new user();
-        $user->delete();
+        $user = new user($_SESSION["name"]);
+        $resp = $user->delete();
+        if($resp["STATUS"]==="OK")
+            $user->clear_wall();
+
         session_destroy();
         break;
 
@@ -62,6 +66,12 @@ switch($data["code"])
         $user = new user($data["fr_name"]);
         $resp = $user->add_friend();
         break;
+
+    case "remove_from_friends":
+        $user = new user($_SESSION["name"]);
+        $resp = $user->remove_from_friends($data["name"]);
+        break;
+
     case "get_wall":
         $user = new user($data["name"]);
         $resp = $user->get_wall();

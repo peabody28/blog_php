@@ -4,13 +4,13 @@ class user
 {
     public $name, $password;
 
-    function __construct($name=false, $password=false)
+    public function __construct($name=false, $password=false)
     {
         $this->name = strtolower($name);
         $this->password = $password;
     }
 
-    function add()
+    public function add()
     {
         if(!$this->name or !$this->password)
             return ["STATUS" => "ERROR", "ERROR" => "Заполните все поля"];
@@ -26,13 +26,14 @@ class user
 
     }
 
-    function delete()
+    public function delete()
     {
-        $user = R::findOne('user', 'name = ?', [$_SESSION["name"]]);
-        R::trash($user);
+        $user = R::findOne('user', 'name = ?', [$this->name]);
+        $id = R::trash($user);
+        return $id ? ["STATUS"=>"OK"]:["STATUS"=>"ERROR"];
     }
 
-    function search()
+    public function search()
     {
         if(!$this->name or !$this->password)
             return ["STATUS" => "ERROR", "ERROR" => "Заполните все поля"];
@@ -41,7 +42,7 @@ class user
         return $find_user ? ["STATUS" => "OK"]:["STATUS" => "ERROR", "ERROR" => "Пользователь не найден"];
     }
 
-    function rename()
+    public function rename()
     {
         if(!$this->name)
             return ["STATUS" => "ERROR", "ERROR" => "Заполните все поля"];
@@ -63,7 +64,7 @@ class user
         return ["STATUS"=>"OK", "NEW_NAME"=>$this->name];
     }
 
-    function add_friend()
+    public function add_friend()
     {
         if(!$this->name)
             return ["STATUS" => "ERROR", "ERROR" => "Заполните все поля"];
@@ -83,6 +84,14 @@ class user
         return ["STATUS"=>"OK", "NEW_FR"=>$this->name];
     }
 
+    public function remove_from_friends($name)
+    {
+        $user = R::findOne('user', 'name = ?', [$this->name]);
+        $user->friends = str_replace(",$name,", "", $user->friends);
+        $id = R::store($user);
+        return $id ? ["STATUS"=>"OK"]:["STATUS"=>"ERROR"];
+    }
+
     function get_wall()
     {
         R::selectDatabase( 'posts' );
@@ -91,13 +100,19 @@ class user
 
         $wall = "";
         if(!$posts)
-            $wall = "Нет записей";
+            return ["STATUS"=>"OK", "TEXT"=>"Нет записей"];
         else
             foreach ($posts as $post)
-                $wall .= "<div class='post'>
-                        <div class='title'>$post->title <span style='opacity: 0.6'>@$post->author</span></div>
-                        <div class='text'>$post->text</div>
-                    </div><br>";
-        return $wall;
+                $wall .= "<div class='post'><div class='title'>$post->title <span style='opacity: 0.6'>@$post->author</span></div><div class='text'>$post->text</div></div><br>";
+        return ["STATUS"=>"OK", "TEXT"=>$wall];
+    }
+
+    function clear_wall()
+    {
+        R::selectDatabase( 'posts' );
+        $wall = R::findAll('posts', 'author = ?', [$_SESSION["name"]]);
+        foreach ($wall as $item) {
+            R::trash($item);
+        }
     }
 }
