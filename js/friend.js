@@ -1,4 +1,4 @@
-let timerId = setInterval(get_posts, 3000);
+let timerId = setInterval(get_posts, 2000);
 
 function get_posts() {
     let fr = ($(location).attr( 'href' ).split('?'))[1];

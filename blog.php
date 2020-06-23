@@ -32,10 +32,18 @@ $posts = R::findAll( 'posts', 'author = ?', [$_SESSION["name"]] );
 R::selectDatabase( 'default' );
 
 foreach ($posts as $post)
-    $content .= "<div class='post'>
+    $content .= "<div>
+                    <div class='post' id=\"$post->id\">
                     <div class='title'>$post->title <span style='opacity: 0.6'>@$post->author</span></div>
                     <div class='text'>$post->text</div>
-                </div><br>";
+                    <form method='POST' id='del_p'>
+                        <input type='hidden' name='code' value='delete_post'>
+                        <input type='hidden' name='id' value=\"$post->id\">
+                        <button type='submit' onclick='del_post_block(\"$post->id\"); return false;'>delete</button>
+                    </form>
+                    </div>
+                    <br>
+                </div>";
 
 $loader = new Twig\Loader\FilesystemLoader(__DIR__.'/templates');
 $twig = new Twig\Environment($loader);

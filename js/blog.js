@@ -31,3 +31,17 @@ $("#add_post").submit(function () {
     });
     return false;
 });
+
+
+function del_post_block(id) {
+    let param = $(".post[id=" + id + "] form").serialize()
+    $.ajax({
+        url: "/server.php",
+        type: "POST",
+        data: param,
+        success: function (res) {
+            let id = param.split('&');
+            $(".post[" + id[1] + "]").parent().remove()
+        }
+    });
+}

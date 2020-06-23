@@ -76,6 +76,10 @@ switch($data["code"])
         $user = new user($data["name"]);
         $resp = $user->get_wall();
         break;
+    case "delete_post":
+        $post = new post();
+        $resp = $post->delete_post($data["id"]);
+        break;
 }
 
 echo json_encode($resp);

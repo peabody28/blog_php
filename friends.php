@@ -28,7 +28,7 @@ $fr_list = $m[1];
 
 foreach ($fr_list as $fr)
     $content .= "<div class='friend'>
-                    <button class='fr' type='button'>$fr</button> 
+                    <button class='fr' type='button' onclick='get_wall(\"$fr\"); return false;'>$fr</button> 
                     <form method='POST'>
                        <input type='hidden' name='name' value=\"$fr\">
                         <input type='hidden' name='code' value='remove_from_friends'>
