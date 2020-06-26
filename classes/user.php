@@ -74,7 +74,7 @@ class user
         $change_users_friends = R::findAll("user", "friends LIKE ?", ["%,$this->name,%"]);
         foreach ($change_users_friends as $user) {
             $user->friends = str_replace(",$this->name,", ",$name,", $user->friends);
-            $user->notifications .= ",1($$this->name $name),";
+            $user->notifications .= ",1($this->name $name),";
             R::store($user);
         }
         return ["STATUS"=>"OK", "NEW_NAME"=>$name];
@@ -136,7 +136,19 @@ class user
             return ["STATUS"=>"OK", "TEXT"=>"Нет записей"];
         else
             foreach ($posts as $post)
-                $wall .= "<div class='post'><div class='title'>$post->title <span style='opacity: 0.6'>@$post->author</span></div><div class='text'>$post->text</div></div><br>";
+                $wall .= "<div>
+                            <div class='post' id=\"$post->id\">
+                            <div class='title'>$post->title <span style='opacity: 0.6'>@$post->author</span></div>
+                            <div class='text'>$post->text</div>
+                            <form method='POST' id='del_p'>
+                                <input type='hidden' name='code' value='delete_post'>
+                                <input type='hidden' name='id' value=\"$post->id\">
+                                <button type='submit' onclick='del_post_block(\"$post->id\"); return false;'>delete</button>
+                            </form>
+                            </div>
+                            <br>
+                        </div>";
+
         return ["STATUS"=>"OK", "TEXT"=>$wall];
     }
 
@@ -149,5 +161,66 @@ class user
         }
         R::selectDatabase( 'default' );
     }
-
+    public function get_notif()
+    {
+        $user = R::findOne('user', 'name = ?', [$this->name]);
+        preg_match_all('/,([0-9])[(](.+?)[)],/', $user->notifications, $m);
+        $content = "";
+        foreach ($m[0] as $notif) {
+            preg_match('/,([0-9])[(](.+?)[)],/', $notif, $notif_data);
+            $code = $notif_data[1];
+            $argv = explode(" ",$notif_data[2]);
+            switch ($code)
+            {
+                case "1":
+                    $content .= "
+                        <div class='pl-3'>
+                            <div class='notif row col-sm-6 pr-0'>
+                                <span><strong>$argv[0]</strong> меняет имя на <strong>$argv[1]</strong></span>
+                                <div class='delete_notif' id=\"$notif\">x</div>
+                            </div>
+                            <br>
+                        </div>";
+                    break;
+                case "2":
+                    $content .= "
+                        <div class='pl-3' >
+                            <div class='notif row col-sm-6 pr-0'>
+                                <span><strong>$argv[0]</strong> удалил аккаунт</span>
+                                <div class='delete_notif' id=\"$notif\">x</div>
+                            </div>
+                            <br>
+                        </div>";
+                    break;
+                case "3":
+                    $content .= "
+                        <div class='pl-3'>
+                            <div class='notif row col-sm-6 pr-0'>
+                                <span><strong>$argv[0]</strong> добавил вас в друзья</span>
+                                <div class='delete_notif' id=\"$notif\">x</div>
+                            </div>
+                            <br>
+                        </div>";
+                    break;
+                case "4":
+                    $content .= "
+                        <div class='pl-3' id='\"$notif\"'>
+                            <div class='notif row col-sm-6 pr-0'>
+                                <span><strong>$argv[0]</strong> удалил вас из друзей</span>
+                                <div class='delete_notif' id=\"$notif\">x</div>
+                            </div>
+                            <br>
+                        </div>";
+                    break;
+            }
+        }
+        return ["STATUS"=>"OK", "TEXT"=>$content];
+    }
+    public function delete_notif($text)
+    {
+        $user = R::findOne('user', 'name = ?', [$this->name]);
+        $user->notifications = str_replace($text, "", $user->notifications);
+        R::store($user);
+        return ["STATUS"=>"OK"];
+    }
 }

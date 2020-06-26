@@ -29,6 +29,9 @@ $("#add_post").submit(function () {
 
         }
     });
+    var text = $('#content').html();
+    text = text.replace('Нет записей','');
+    $('#content').html(text);
     return false;
 });
 
