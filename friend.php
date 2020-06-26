@@ -1,26 +1,27 @@
 <?php
 session_start();
-if (!isset($_SESSION["name"]))
-    if (!isset($_COOKIE['name']))
-        header("Location: /login.php");
-    else
-        $_SESSION["name"]=$_COOKIE['name'];
+require_once "in.php";
+access();
 
-require "db.php";
 require_once "vendor/autoload.php";
 
 $user = R::findOne( 'user', 'name = ?', [$_SESSION["name"]] );
 $fr = $user->friends;
 
+$loader = new Twig\Loader\FilesystemLoader(__DIR__.'/templates');
+$twig = new Twig\Environment($loader);
+
 if(strpos($fr, "$_GET[name]")===false)
-    $content = "Пользователя нет у вас в друзьях";
+    echo $twig->render('main.html',
+        ['title'=>"wall of $_GET[name]", 'css'=>"/css/friend.css",
+            'content'=>"Пользователя нет у вас в друзьях", "js"=>""] );
 else
 {
     $user = R::findOne( 'user', 'name = ?', [$_GET["name"]] );
     if($user)
     {
         R::selectDatabase('posts');
-        $posts = R::findAll('posts', 'author = ?', [$_GET["name"]]);
+        $posts = R::findAll('posts', $user->id);
         R::selectDatabase('default');
 
         if (!$posts)
@@ -34,13 +35,11 @@ else
     }
     else
         $content = 'Пользователь удален';
+
+    echo $twig->render('main.html',
+        ['title'=>"wall of $_GET[name]", 'css'=>"/css/friend.css",
+            'content'=>$content, "js"=>"/js/friend.js"] );
+
 }
-
-$loader = new Twig\Loader\FilesystemLoader(__DIR__.'/templates');
-$twig = new Twig\Environment($loader);
-
-echo $twig->render('main.html',
-    ['title'=>"wall of $_GET[name]", 'css'=>"/css/friend.css",
-        'content'=>$content, "js"=>"/js/friend.js"] );
 ?>
 

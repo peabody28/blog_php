@@ -9,6 +9,7 @@ class post
         $this->author = $author;
         $this->title = $title;
         $this->text = $text;
+        R::selectDatabase( 'posts' );
     }
 
     public function add()
@@ -16,13 +17,11 @@ class post
         if(!($this->title and $this->text))
             return ["STATUS" => "ERROR", "ERROR" => "Заполните все поля"];
 
-        R::selectDatabase( 'posts' );
         $db = R::dispense('posts');
         $db->author = $this->author;
         $db->title = $this->title;
         $db->text = $this->text;
         $id = R::store($db);
-        R::selectDatabase( 'default' );
 
         return ["STATUS" => "OK", "block"=>
                 "<div>
@@ -39,12 +38,12 @@ class post
                 </div>"];
     }
 
-    public function change_author()
+    public function change_author($name)
     {
         R::selectDatabase( 'posts' );
-        $us = R::findAll('posts', 'author = ?', [$_SESSION["name"]]);
+        $us = R::findAll('posts', 'author = ?', [$this->author]);
         foreach ($us as $u) {
-            $u->author = $this->author;
+            $u->author = $name;
             R::store($u);
         }
     }
@@ -53,7 +52,6 @@ class post
     {
         R::selectDatabase( 'posts' );
         $post = R::load('posts', $id);
-        
         R::trash($post);
         return ["STATUS"=>"OK"];
     }

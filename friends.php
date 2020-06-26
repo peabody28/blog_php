@@ -1,14 +1,10 @@
 <?php
 session_start();
-if (!isset($_SESSION["name"]))
-    if (!isset($_COOKIE['name']))
-        header("Location: /login.php");
-    else
-        $_SESSION["name"]=$_COOKIE['name'];
+require_once "in.php";
+access();
 
 require_once "db.php";
 require_once "vendor/autoload.php";
-
 
 $content = "
 <form id='add_f' method='post'>

@@ -29,7 +29,6 @@ function get_wall(name)
     $(location).attr("href", "/friend.php?name="+name)
 }
 
-
 function del(name){
     $.ajax({
         url: "/server.php",

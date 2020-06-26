@@ -8,6 +8,7 @@ class user
     {
         $this->name = strtolower($name);
         $this->password = $password;
+        R::selectDatabase( 'default' );
     }
 
     public function add()
@@ -15,12 +16,19 @@ class user
         if(!$this->name or !$this->password)
             return ["STATUS" => "ERROR", "ERROR" => "Заполните все поля"];
 
+        if(!preg_match("/^[a-zA-Z0-9]+$/",$this->name))
+            return ["STATUS" => "ERROR",
+                "ERROR" => "Логин может состоять только из букв английского алфавита и цифр"];
+
         $find_user = R::findOne('user', 'name = ?', [$this->name]);
         if ($find_user)
             return ["STATUS" => "ERROR", "ERROR" => "Пользователь существует"];
+
         $user = R::dispense('user');
         $user->name = $this->name;
-        $user->password = $this->password;
+        $user->password = md5(md5(trim($this->password)));
+        $user->friends = "";
+        $user->notifications = "";
         $id = R::store($user);
         return $id ? ["STATUS" => "OK"]:["STATUS" => "ERROR", "ERROR" => "Ошибка при добавлении в базу"];
 
@@ -30,6 +38,12 @@ class user
     {
         $user = R::findOne('user', 'name = ?', [$this->name]);
         $id = R::trash($user);
+
+        $users = R::findAll("user", "friends LIKE ?", ["%,$this->name,%"]);
+        foreach ($users as $user) {
+            $user->notifications .= ",2($this->name),";
+            R::store($user);
+        }
         return $id ? ["STATUS"=>"OK"]:["STATUS"=>"ERROR"];
     }
 
@@ -38,50 +52,59 @@ class user
         if(!$this->name or !$this->password)
             return ["STATUS" => "ERROR", "ERROR" => "Заполните все поля"];
 
-        $find_user = R::findOne('user', 'name = ? AND password = ?', [$this->name, $this->password]);
+        $find_user = R::findOne('user', 'name = ? AND password = ?', [$this->name, md5(md5(trim($this->password)))]);
         return $find_user ? ["STATUS" => "OK"]:["STATUS" => "ERROR", "ERROR" => "Пользователь не найден"];
     }
 
-    public function rename()
+    public function rename($name)
     {
-        if(!$this->name)
+        if(!$name)
             return ["STATUS" => "ERROR", "ERROR" => "Заполните все поля"];
 
-        $new_name_user = R::findOne('user', 'name = ?', [$this->name]);
+        $new_name_user = R::findOne('user', 'name = ?', [$name]);
 
         if($new_name_user)
             return ["STATUS"=>"ERROR", "ERROR"=>"Пользователь существует"];
         unset($new_name_user);
-        $new_name_user = R::findOne('user', 'name = ?', [$_SESSION["name"]]);
-        $new_name_user->name = $this->name;
+        $new_name_user = R::findOne('user', 'name = ?', [$this->name]);
+        $new_name_user->name = $name;
         R::store( $new_name_user );
 
-        $change_users_friends = R::findAll("user", "friends LIKE ?", ["%,$_SESSION[name],%"]);
+
+        $change_users_friends = R::findAll("user", "friends LIKE ?", ["%,$this->name,%"]);
         foreach ($change_users_friends as $user) {
-            $user->friends = str_replace(",$_SESSION[name],", ",$this->name,", $user->friends);
+            $user->friends = str_replace(",$this->name,", ",$name,", $user->friends);
+            $user->notifications .= ",1($$this->name $name),";
             R::store($user);
         }
-        return ["STATUS"=>"OK", "NEW_NAME"=>$this->name];
+        return ["STATUS"=>"OK", "NEW_NAME"=>$name];
     }
 
-    public function add_friend()
+    public function add_friend($name)
     {
-        if(!$this->name)
+        if(!$name)
             return ["STATUS" => "ERROR", "ERROR" => "Заполните все поля"];
 
-        if($this->name == $_SESSION["name"])
+        if($name == $this->name)
             return ["STATUS" => "ERROR", "ERROR" => "Самого себя нельзя добавть в друзья"];
 
-        $friend = R::findOne('user', 'name = ?', [$this->name]);
+        $friend = R::findOne('user', 'name = ?', [$name]);
+
         if (!$friend)
             return ["STATUS" => "ERROR", "ERROR" => "Пользователя не существует"];
 
-        $user = R::findOne('user', 'name = ?', [$_SESSION["name"]]);
-        if(stristr(",".$this->name.",", $user->friends))
+        $user = R::findOne('user', 'name = ?', [$this->name]);
+
+        if(stristr(",".$name.",", $user->friends))
             return ["STATUS"=>"ERROR", "ERROR"=>"Уже в друзьях"];
-        $user->friends = $user->friends.",".$this->name.",";
+
+        $user->friends = $user->friends.",".$name.",";
         R::store($user);
-        return ["STATUS"=>"OK", "NEW_FR"=>$this->name];
+
+        $friend->notifications .= ",3($this->name),";
+        R::store($friend);
+
+        return ["STATUS"=>"OK", "NEW_FR"=>$name];
     }
 
     public function remove_from_friends($name)
@@ -89,13 +112,23 @@ class user
         $user = R::findOne('user', 'name = ?', [$this->name]);
         $user->friends = str_replace(",$name,", "", $user->friends);
         $id = R::store($user);
+
+        $deleted_friend = R::findOne('user', 'name = ?', [$name]);
+        if ($deleted_friend)
+        {
+            $deleted_friend->notifications .= ",4($this->name),";
+            R::store($deleted_friend);
+        }
         return $id ? ["STATUS"=>"OK"]:["STATUS"=>"ERROR"];
     }
 
-    function get_wall()
+    public function get_wall($name)
     {
+        if(!$name)
+            return ["STATUS"=>"ERROR", "ERROR"=>"Не задан автор постов"];
+
         R::selectDatabase( 'posts' );
-        $posts = R::findAll( 'posts', 'author = ?', [$this->name] );
+        $posts = R::findAll( 'posts', 'author = ?', [$name] );
         R::selectDatabase( 'default' );
 
         $wall = "";
@@ -107,12 +140,14 @@ class user
         return ["STATUS"=>"OK", "TEXT"=>$wall];
     }
 
-    function clear_wall()
+    public function clear_wall()
     {
         R::selectDatabase( 'posts' );
         $wall = R::findAll('posts', 'author = ?', [$_SESSION["name"]]);
         foreach ($wall as $item) {
             R::trash($item);
         }
+        R::selectDatabase( 'default' );
     }
+
 }

@@ -4,8 +4,10 @@ session_start();
 require_once "db.php";
 require_once("classes/user.php");
 require_once("classes/post.php");
+require_once ("classes/crypter.php");
 
-$data = $_REQUEST;
+$data = $_POST;
+
 if(!$data)
     exit("no, no, no");
 
@@ -17,16 +19,26 @@ switch($data["code"])
         if($resp["STATUS"]==="OK")
             $_SESSION['name'] = $user->name;
         if(isset($data["check"]))
-            setcookie("name", $user->name, time()+3600*24*365);
+        {
+            $crypter = new Crypter("152");
+            $code = $crypter->encrypt($user->name);
+            setcookie("name", $code, time()+3600*24*365);
+        }
+
         break;
 
     case "signup":
         $user = new user($data["name"], $data["password"]);
         $resp = $user->add();
+
         if($resp["STATUS"]==="OK")
             $_SESSION['name'] = $user->name;
-        if($data["check"])
-            setcookie("name", $user->name, time()+3600*24*365);
+        if(isset($data["check"]))
+        {
+            $crypter = new Crypter("152");
+            $code = $crypter->encrypt($user->name);
+            setcookie("name", $code, time()+3600*24*365);
+        }
         break;
 
     case "delete":
@@ -34,20 +46,25 @@ switch($data["code"])
         $resp = $user->delete();
         if($resp["STATUS"]==="OK")
             $user->clear_wall();
-
         session_destroy();
+        setcookie("name", "", time()-3600);
         break;
 
     case "rename":
-        $user = new user($data["name"]);
-        $resp = $user->rename();
+        $user = new user($_SESSION["name"]);
+        $resp = $user->rename($data["name"]);
         if($resp["STATUS"]==="OK")
         {
-            $post = new post($data["name"]);
-            $post->change_author();
-            $_SESSION['name'] = $user->name;
+            $post = new post($_SESSION["name"]);
+            $post->change_author($data["name"]);
+            $_SESSION['name'] = $data["name"];
             if(isset($_COOKIE["name"]))
-                setcookie("name", $user->name, time()+3600*24*365);
+            {
+                $crypter = new Crypter("152");
+                $code = $crypter->encrypt($user->name);
+                setcookie("name", $code, time()+3600*24*365);
+            }
+
         }
         break;
 
@@ -62,23 +79,24 @@ switch($data["code"])
         $resp = $post->add();
         break;
 
+    case "delete_post":
+        $post = new post($_SESSION["name"]);
+        $resp = $post->delete_post($data["id"]);
+        break;
+
+    case "get_wall":
+        $user = new user($_SESSION["name"]);
+        $resp = $user->get_wall($data["name"]);
+        break;
+
     case "add_friend":
-        $user = new user($data["fr_name"]);
-        $resp = $user->add_friend();
+        $user = new user($_SESSION["name"]);
+        $resp = $user->add_friend($data["fr_name"]);
         break;
 
     case "remove_from_friends":
         $user = new user($_SESSION["name"]);
         $resp = $user->remove_from_friends($data["name"]);
-        break;
-
-    case "get_wall":
-        $user = new user($data["name"]);
-        $resp = $user->get_wall();
-        break;
-    case "delete_post":
-        $post = new post();
-        $resp = $post->delete_post($data["id"]);
         break;
 }
 

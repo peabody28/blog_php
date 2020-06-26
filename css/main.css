@@ -30,22 +30,30 @@ body {
   align-items: center;
   justify-content: center;
 }
-#header .header_a {
+#header #str {
+  justify-content: space-evenly;
+}
+#header #str .header_a {
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   font-size: 17px;
 }
-#header .header_a a {
+#header #str .header_a a {
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-#header .header_a a :visited {
+#header #str .header_a a :visited {
   text-decoration: none;
   color: white;
+}
+#header #exit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 #header #exit button {
   font-weight: 600;

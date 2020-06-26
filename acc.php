@@ -1,11 +1,7 @@
 <?php
 session_start();
-if (!isset($_SESSION["name"]))
-    if (!isset($_COOKIE['name']))
-        header("Location: /login.php");
-    else
-        $_SESSION["name"]=$_COOKIE['name'];
-
+require_once "in.php";
+access();
 
 require "vendor/autoload.php";
 
