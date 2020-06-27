@@ -21,7 +21,7 @@ else
     if($user)
     {
         R::selectDatabase('posts');
-        $posts = R::findAll('posts', $user->id);
+        $posts = R::findAll('posts', "author = ?", [$_GET["name"]]);
         R::selectDatabase('default');
 
         if (!$posts)

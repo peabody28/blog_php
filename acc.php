@@ -12,9 +12,18 @@ $content = "<form id='dl' method='POST'>
             <br>
             <br>
             <form id='rn' method='POST'>
+                <label for='name'><strong>Изменить имя</strong></label><br>
                 <input type=\"text\" name=\"name\" placeholder=\"имя сейчас:&nbsp;$_SESSION[name]\">
                 <input type=\"hidden\" name=\"code\" value=\"rename\">
-                <button type=\"submit\">rename</button>
+                <button type=\"submit\">Изменить имя</button>
+            </form>
+            <br>
+            <br>
+            <form id='change_pass' method='POST'>
+                <label for='pass'><strong>Изменить пароль</strong></label><br>
+                <input type=\"text\" name=\"pass\">
+                <input type=\"hidden\" name=\"code\" value=\"change_pass\">
+                <button type=\"submit\">Изменить пароль</button>
             </form>
             <br>
             <br>

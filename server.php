@@ -68,6 +68,11 @@ switch($data["code"])
         }
         break;
 
+
+    case "change_pass":
+        $user = new user($_SESSION["name"]);
+        $resp = $user->change_pass($data["pass"]);
+        break;
     case "exit":
         unset($_SESSION["name"]);
         setcookie("name","",time()-3600);
@@ -98,10 +103,12 @@ switch($data["code"])
         $user = new user($_SESSION["name"]);
         $resp = $user->remove_from_friends($data["name"]);
         break;
+
     case "get_notif":
         $user = new user($_SESSION["name"]);
         $resp = $user->get_notif();
         break;
+
     case "del_notif":
         $user = new user($_SESSION["name"]);
         $resp = $user->delete_notif($data["text"]);

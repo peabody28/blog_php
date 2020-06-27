@@ -39,6 +39,7 @@ class user
         $user = R::findOne('user', 'name = ?', [$this->name]);
         $id = R::trash($user);
 
+        //отсылаю уведомления об удаленном друге
         $users = R::findAll("user", "friends LIKE ?", ["%,$this->name,%"]);
         foreach ($users as $user) {
             $user->notifications .= ",2($this->name),";
@@ -53,7 +54,7 @@ class user
             return ["STATUS" => "ERROR", "ERROR" => "Заполните все поля"];
 
         $find_user = R::findOne('user', 'name = ? AND password = ?', [$this->name, md5(md5(trim($this->password)))]);
-        return $find_user ? ["STATUS" => "OK"]:["STATUS" => "ERROR", "ERROR" => "Пользователь не найден"];
+        return $find_user ? ["STATUS" => "OK"]:["STATUS" => "ERROR", "ERROR" => "Неверное имя или пароль"];
     }
 
     public function rename($name)
@@ -62,15 +63,15 @@ class user
             return ["STATUS" => "ERROR", "ERROR" => "Заполните все поля"];
 
         $new_name_user = R::findOne('user', 'name = ?', [$name]);
-
         if($new_name_user)
             return ["STATUS"=>"ERROR", "ERROR"=>"Пользователь существует"];
         unset($new_name_user);
+
         $new_name_user = R::findOne('user', 'name = ?', [$this->name]);
         $new_name_user->name = $name;
         R::store( $new_name_user );
 
-
+        //меняю имя пользователя у друзей и добавляю уведомление
         $change_users_friends = R::findAll("user", "friends LIKE ?", ["%,$this->name,%"]);
         foreach ($change_users_friends as $user) {
             $user->friends = str_replace(",$this->name,", ",$name,", $user->friends);
@@ -80,6 +81,14 @@ class user
         return ["STATUS"=>"OK", "NEW_NAME"=>$name];
     }
 
+
+    public function change_pass($pass)
+    {
+        $user = R::findOne("user", "name = ?", [$this->name]);
+        $user->password = md5(md5(trim($pass)));
+        $id = R::store($user);
+        return $id ? ["STATUS"=>"OK"]:["STATUS"=>"ERROR"];
+    }
     public function add_friend($name)
     {
         if(!$name)
@@ -133,22 +142,33 @@ class user
 
         $wall = "";
         if(!$posts)
-            return ["STATUS"=>"OK", "TEXT"=>"Нет записей"];
+            return ["STATUS"=>"OK", "TEXT"=>"<span id='no_posts'>Нет записей</span>"];
         else
-            foreach ($posts as $post)
-                $wall .= "<div>
+            {
+                foreach ($posts as $post)
+                {
+                    $f = "<form method='POST' id='del_p'>
+                            <input type='hidden' name='code' value='delete_post'>
+                            <input type='hidden' name='id' value=\"$post->id\">
+                            <button type='submit' onclick='del_post_block(\"$post->id\"); return false;'>delete</button>
+                        </form>";
+                    $wall .= $name==$_SESSION["name"]
+                        ? "<div>
                             <div class='post' id=\"$post->id\">
                             <div class='title'>$post->title <span style='opacity: 0.6'>@$post->author</span></div>
                             <div class='text'>$post->text</div>
-                            <form method='POST' id='del_p'>
-                                <input type='hidden' name='code' value='delete_post'>
-                                <input type='hidden' name='id' value=\"$post->id\">
-                                <button type='submit' onclick='del_post_block(\"$post->id\"); return false;'>delete</button>
-                            </form>
+                            $f
+                            </div>
+                            <br>
+                        </div>" : "<div>
+                            <div class='post' id=\"$post->id\">
+                            <div class='title'>$post->title <span style='opacity: 0.6'>@$post->author</span></div>
+                            <div class='text'>$post->text</div>
                             </div>
                             <br>
                         </div>";
-
+                }
+            }
         return ["STATUS"=>"OK", "TEXT"=>$wall];
     }
 
@@ -177,7 +197,7 @@ class user
                         <div class='pl-3'>
                             <div class='notif row col-sm-6 pr-0'>
                                 <span><strong>$argv[0]</strong> меняет имя на <strong>$argv[1]</strong></span>
-                                <div class='delete_notif' id=\"$notif\">x</div>
+                                <div class='delete_notif' id=\"$notif\" onclick='del_notif(\"$notif\")'>x</div>
                             </div>
                             <br>
                         </div>";
@@ -187,7 +207,7 @@ class user
                         <div class='pl-3' >
                             <div class='notif row col-sm-6 pr-0'>
                                 <span><strong>$argv[0]</strong> удалил аккаунт</span>
-                                <div class='delete_notif' id=\"$notif\">x</div>
+                                <div class='delete_notif' id=\"$notif\" onclick='del_notif(\"$notif\")'>x</div>
                             </div>
                             <br>
                         </div>";
@@ -197,25 +217,26 @@ class user
                         <div class='pl-3'>
                             <div class='notif row col-sm-6 pr-0'>
                                 <span><strong>$argv[0]</strong> добавил вас в друзья</span>
-                                <div class='delete_notif' id=\"$notif\">x</div>
+                                <div class='delete_notif' id=\"$notif\" onclick='del_notif(\"$notif\")'>x</div>
                             </div>
                             <br>
                         </div>";
                     break;
                 case "4":
                     $content .= "
-                        <div class='pl-3' id='\"$notif\"'>
+                        <div class='pl-3'>
                             <div class='notif row col-sm-6 pr-0'>
                                 <span><strong>$argv[0]</strong> удалил вас из друзей</span>
-                                <div class='delete_notif' id=\"$notif\">x</div>
+                                <div class='delete_notif' id=\"$notif\" onclick='del_notif(\"$notif\")'>x</div>
                             </div>
                             <br>
                         </div>";
                     break;
             }
         }
-        return ["STATUS"=>"OK", "TEXT"=>$content];
+        return ["STATUS"=>"OK", "TEXT"=>$content, "count"=>count($m[0])];
     }
+
     public function delete_notif($text)
     {
         $user = R::findOne('user', 'name = ?', [$this->name]);

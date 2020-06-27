@@ -20,18 +20,16 @@ $("#add_post").submit(function () {
             let response = JSON.parse(res);
             if(response["STATUS"]==="OK")
             {
+                if($('#no_posts'))
+                    $("#no_posts").remove()
                 $("#content").append(response["block"]);
                 $("#error").html("")
             }
 
             else
                 $("#error").html(response["ERROR"])
-
         }
     });
-    var text = $('#content').html();
-    text = text.replace('Нет записей','');
-    $('#content').html(text);
     return false;
 });
 

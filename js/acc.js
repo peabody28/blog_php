@@ -31,3 +31,19 @@ $('#rn').submit(function () {
     });
     return false;
 });
+
+$('#change_pass').submit(function () {
+    $.ajax({
+        url: "/server.php",
+        type: "POST",
+        data: $(this).serialize(),
+        success: function (res) {
+            let response = JSON.parse(res);
+            if(response['STATUS']==="OK")
+                $('#hh').html("<span style='color: green'>succesfuly</span>");
+            else
+                $('#hh').html("<span style='color: red'>"+response["STATUS"]+"</span>");
+        }
+    });
+    return false;
+});

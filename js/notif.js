@@ -1,7 +1,4 @@
-$('.delete_notif').click(function () {
-
-    let elem = $(this)
-    let id = $(this).attr("id")
+function del_notif(id) {
     let param = "code=del_notif&text="+id
     $.ajax({
         url: "/server.php",
@@ -10,22 +7,14 @@ $('.delete_notif').click(function () {
         success: function (res) {
             let response = JSON.parse(res)
             if(response["STATUS"]==="OK")
-                elem.parent().parent().remove()
+            {
+                $(".delete_notif[id='"+ id +"']").parent().parent().remove()
+                let count = ($("#notif_count").text())-1
+                if(count)
+                    $('#notif_count').html(count)
+                else
+                    $('#notif_count').remove()
+            }
         }
     });
-})
-
-let timerId = setInterval(get_notif, 20000);
-
-function get_notif() {
-    $.ajax({
-        url: "/server.php",
-        type: "POST",
-        data: "code=get_notif",
-        success: function (res) {
-            let response = JSON.parse(res)
-            $('#content').html(response["TEXT"])
-        }
-    });
-    return false;
 }
