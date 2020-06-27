@@ -39,7 +39,7 @@ $("#exit_form").submit(function () {
     return false;
 });
 
-setInterval(get_notif, 10000);
+setInterval(get_notif, 3000);
 
 function get_notif() {
     $.ajax({
@@ -51,6 +51,8 @@ function get_notif() {
             let count = response["count"];
             if(count)
             {
+                if(!$("#notif_count").length)
+                    $("#notif").after().append("&nbsp;<div id='notif_count'></div>")
                 if(location.href=="http://127.0.0.2/notif.php")
                     $('#content').html(response["TEXT"])
                 $('#notif_count').html(count)
