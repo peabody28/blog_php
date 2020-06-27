@@ -52,7 +52,15 @@ class post
     {
         R::selectDatabase( 'posts' );
         $post = R::load('posts', $id);
-        R::trash($post);
-        return ["STATUS"=>"OK"];
+        if ($post->author == $this->author)
+        {
+            R::trash($post);
+            return ["STATUS"=>"OK"];
+        }
+        else
+        {
+            return ["STATUS"=>"ERROR", "TEXT"=>"Вы не можете удалить этот пост"];
+        }
+
     }
 }

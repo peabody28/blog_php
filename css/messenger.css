@@ -1,0 +1,16 @@
+#messenger a {
+  text-decoration: none !important;
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: default;
+}
+.container-fluid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#per {
+  font-size: 18px;
+  background-color: white;
+}
+/*# sourceMappingURL=messenger.css.map */

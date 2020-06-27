@@ -21,7 +21,7 @@ $content = "<form id='dl' method='POST'>
             <br>
             <form id='change_pass' method='POST'>
                 <label for='pass'><strong>Изменить пароль</strong></label><br>
-                <input type=\"text\" name=\"pass\">
+                <input type=\"password\" name=\"pass\">
                 <input type=\"hidden\" name=\"code\" value=\"change_pass\">
                 <button type=\"submit\">Изменить пароль</button>
             </form>

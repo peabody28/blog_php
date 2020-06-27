@@ -41,5 +41,6 @@ else
             'content'=>$content, "js"=>"/js/friend.js"] );
 
 }
+
 ?>
 

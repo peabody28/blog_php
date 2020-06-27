@@ -7,9 +7,18 @@
 .friend {
   color: green;
   font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 #mess {
   color: red;
   font-weight: bold;
+}
+.del_fr {
+  height: inherit;
+  padding: 0 10px 0 10px;
+  background-color: indianred;
+  color: #f1f1f1;
 }
 /*# sourceMappingURL=friends.css.map */

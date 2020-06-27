@@ -23,13 +23,17 @@ preg_match_all('/,(.+?),/', $user->friends, $m);
 $fr_list = $m[1];
 
 foreach ($fr_list as $fr)
-    $content .= "<div class='friend'>
-                    <button class='fr' type='button' onclick='get_wall(\"$fr\"); return false;'>$fr</button> 
-                    <form method='POST'>
-                       <input type='hidden' name='name' value=\"$fr\">
-                        <input type='hidden' name='code' value='remove_from_friends'>
-                        <button type='submit' onclick='del(\"$fr\"); return false;'>удалить</button>
-                    </form>
+    $content .= "<div class='friend col-sm-5'>
+                    <div class='fr_div'><button class='fr' type='button' onclick='get_wall(\"$fr\"); return false;'>$fr</button></div>
+                    <div class='fr_div'><button id='send' onclick='send_mess(\"$fr\"); return false;'>send mess</button></div>
+                    <div class='fr_div'>
+                        <form method='POST'>
+                           <input type='hidden' name='name' value=\"$fr\">
+                            <input type='hidden' name='code' value='remove_from_friends'>
+                            <div class='del_fr' type='submit' onclick='del(\"$fr\"); return false;'>удалить</div>
+                        </form>
+                    </div>
+                    <br>
                     <br>
                 </div>";
 $content .= "</div>";

@@ -53,7 +53,7 @@ function get_notif() {
             {
                 if(!$("#notif_count").length)
                     $("#notif").after().append("&nbsp;<div id='notif_count'></div>")
-                if(location.href=="http://127.0.0.2/notif.php")
+                if(location.href=="http://127.0.0.2/notif.php" || location.href=="http://192.168.1.102/notif.php" )
                     $('#content').html(response["TEXT"])
                 $('#notif_count').html(count)
             }

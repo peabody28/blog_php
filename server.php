@@ -44,8 +44,6 @@ switch($data["code"])
     case "delete":
         $user = new user($_SESSION["name"]);
         $resp = $user->delete();
-        if($resp["STATUS"]==="OK")
-            $user->clear_wall();
         session_destroy();
         setcookie("name", "", time()-3600);
         break;
@@ -112,7 +110,29 @@ switch($data["code"])
     case "del_notif":
         $user = new user($_SESSION["name"]);
         $resp = $user->delete_notif($data["text"]);
+        break;
+    case "add_message":
+        R::selectDatabase("messages");
+        $messages = R::dispense('messages');
+        $messages->author = $_SESSION["name"];
+        $messages->to_name = $data["to"];
+        $messages->text = $data["text"];
+        R::store($messages);
+        R::selectDatabase("default");
+        $mess = "<span><strong>$messages->author</strong>:&nbsp;&nbsp;$messages->text</span><br>";
+        $resp = ["STATUS"=>"OK", "mess"=>$mess];
+        break;
 
+    case "get_messages":
+        R::selectDatabase("messages");
+        $messages = R::findAll("messages",
+            "(author = ? AND to_name = ?) OR (author = ? AND to_name = ?)",
+            [$_SESSION["name"], $data["name"], $data["name"], $_SESSION["name"]]);
+        $mess_list = "";
+        foreach ($messages as $mess)
+            $mess_list .= "<span><strong>$mess->author</strong>:&nbsp;&nbsp;$mess->text</span><br>";
+        $resp = ["STATUS"=>"OK", "messages"=>$mess_list];
+        break;
 }
 
 echo json_encode($resp);
