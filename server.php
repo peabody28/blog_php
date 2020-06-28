@@ -27,6 +27,12 @@ switch($data["code"])
 
         break;
 
+    case "exit":
+        unset($_SESSION["name"]);
+        setcookie("name","",time()-3600);
+        $resp = ["STATUS"=>"OK"];
+        break;
+
     case "signup":
         $user = new user($data["name"], $data["password"]);
         $resp = $user->add();
@@ -50,12 +56,12 @@ switch($data["code"])
 
     case "rename":
         $user = new user($_SESSION["name"]);
-        $resp = $user->rename($data["name"]);
+        $resp = $user->rename(strtolower(trim($data["name"])));
         if($resp["STATUS"]==="OK")
         {
             $post = new post($_SESSION["name"]);
-            $post->change_author($data["name"]);
-            $_SESSION['name'] = $data["name"];
+            $post->change_author(strtolower(trim($data["name"])));
+            $_SESSION['name'] = strtolower(trim($data["name"]));
             if(isset($_COOKIE["name"]))
             {
                 $crypter = new Crypter("152");
@@ -66,15 +72,34 @@ switch($data["code"])
         }
         break;
 
-
     case "change_pass":
         $user = new user($_SESSION["name"]);
-        $resp = $user->change_pass($data["pass"]);
+        $resp = $user->change_pass(trim($data["pass"]));
         break;
-    case "exit":
-        unset($_SESSION["name"]);
-        setcookie("name","",time()-3600);
-        $resp = ["STATUS"=>"OK"];
+
+    case "add_friend":
+        $user = new user($_SESSION["name"]);
+        $resp = $user->add_friend(strtolower(trim($data["fr_name"])));
+        break;
+
+    case "remove_from_friends":
+        $user = new user($_SESSION["name"]);
+        $resp = $user->remove_from_friends(strtolower(trim($data["fr_name"])));
+        break;
+
+    case "get_wall":
+        $user = new user(strtolower(trim($data["name"])));
+        $resp = $user->get_wall();
+        break;
+
+    case "get_notif":
+        $user = new user($_SESSION["name"]);
+        $resp = $user->get_notif();
+        break;
+
+    case "del_notif":
+        $user = new user($_SESSION["name"]);
+        $resp = $user->delete_notif($data["text"]);
         break;
 
     case "add_post":
@@ -87,39 +112,22 @@ switch($data["code"])
         $resp = $post->delete_post($data["id"]);
         break;
 
-    case "get_wall":
-        $user = new user($_SESSION["name"]);
-        $resp = $user->get_wall($data["name"]);
-        break;
-
-    case "add_friend":
-        $user = new user($_SESSION["name"]);
-        $resp = $user->add_friend($data["fr_name"]);
-        break;
-
-    case "remove_from_friends":
-        $user = new user($_SESSION["name"]);
-        $resp = $user->remove_from_friends($data["name"]);
-        break;
-
-    case "get_notif":
-        $user = new user($_SESSION["name"]);
-        $resp = $user->get_notif();
-        break;
-
-    case "del_notif":
-        $user = new user($_SESSION["name"]);
-        $resp = $user->delete_notif($data["text"]);
-        break;
     case "add_message":
+        if (!$data["text"])
+        {
+            $resp = ["STATUS"=>"ERROR", "ERROR"=>"Введите сообщение"];
+            break;
+        }
+
         R::selectDatabase("messages");
         $messages = R::dispense('messages');
         $messages->author = $_SESSION["name"];
         $messages->to_name = $data["to"];
         $messages->text = $data["text"];
+        $messages->time = date("H:i");
         R::store($messages);
         R::selectDatabase("default");
-        $mess = "<span><strong>$messages->author</strong>:&nbsp;&nbsp;$messages->text</span><br>";
+        $mess = "<span><strong>$messages->author</strong>:&nbsp;&nbsp;$messages->text</span><span id='time'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$messages->time</span><br>";
         $resp = ["STATUS"=>"OK", "mess"=>$mess];
         break;
 
@@ -130,7 +138,7 @@ switch($data["code"])
             [$_SESSION["name"], $data["name"], $data["name"], $_SESSION["name"]]);
         $mess_list = "";
         foreach ($messages as $mess)
-            $mess_list .= "<span><strong>$mess->author</strong>:&nbsp;&nbsp;$mess->text</span><br>";
+            $mess_list .= "<span><strong>$mess->author</strong>:&nbsp;&nbsp;$mess->text</span><span id='time'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$mess->time</span><br>";
         $resp = ["STATUS"=>"OK", "messages"=>$mess_list];
         break;
 }

@@ -25,9 +25,9 @@ $("#add_post").submit(function () {
                 $("#content").append(response["block"]);
                 $("#error").html("")
             }
-
             else
                 $("#error").html(response["ERROR"])
+            $("#add_post")[0].reset();
         }
     });
     return false;

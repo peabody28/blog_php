@@ -5,7 +5,15 @@ $('#add_mess').submit(function () {
         data: $(this).serialize(),
         success: function (res) {
             let response = JSON.parse(res)
-            $("#per").append(response["mess"])
+            if(response["STATUS"]=="OK")
+            {
+                $("#error").html("")
+                $("#per").append(response["mess"])
+            }
+
+            else
+                $("#error").html(response["ERROR"])
+            $('#add_mess')[0].reset();
         }
     })
     return false;

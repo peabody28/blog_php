@@ -69,6 +69,7 @@ else
                         <input type='hidden' name='to' value=\"$_GET[name]\">
                         <button type='submit'>send</button>
                     </form>
+                    <div id='error'></div>
                     <br>
                     <br>
                     <div class='container-fluid'>
@@ -79,7 +80,7 @@ else
             "(author = ? AND to_name = ?) OR (author = ? AND to_name = ?)",
             [$_SESSION["name"], $_GET["name"], $_GET["name"], $_SESSION["name"]]);
         foreach ($messages as $mess)
-            $content .= "<span><strong>$mess->author</strong>:&nbsp;&nbsp;$mess->text</span><br>";
+            $content .= "<span><strong>$mess->author</strong>:&nbsp;&nbsp;$mess->text</span><span id='time'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$mess->time</span><br>";
         R::selectDatabase("default");
 
 

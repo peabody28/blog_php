@@ -28,7 +28,7 @@ foreach ($fr_list as $fr)
                     <div class='fr_div'><button id='send' onclick='send_mess(\"$fr\"); return false;'>send mess</button></div>
                     <div class='fr_div'>
                         <form method='POST'>
-                           <input type='hidden' name='name' value=\"$fr\">
+                            <input type='hidden' name='fr_name' value=\"$fr\">
                             <input type='hidden' name='code' value='remove_from_friends'>
                             <div class='del_fr' type='submit' onclick='del(\"$fr\"); return false;'>удалить</div>
                         </form>

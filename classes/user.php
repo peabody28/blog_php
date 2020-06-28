@@ -6,8 +6,8 @@ class user
 
     public function __construct($name=false, $password=false)
     {
-        $this->name = strtolower($name);
-        $this->password = $password;
+        $this->name = strtolower(trim($name));
+        $this->password = trim($password);
         R::selectDatabase( 'default' );
     }
 
@@ -26,7 +26,7 @@ class user
 
         $user = R::dispense('user');
         $user->name = $this->name;
-        $user->password = md5(md5(trim($this->password)));
+        $user->password = md5(md5($this->password));
         $user->friends = "";
         $user->notifications = "";
         $id = R::store($user);
@@ -52,6 +52,10 @@ class user
         foreach ($wall as $item)
             R::trash($item);
 
+        R::selectDatabase( 'messages' );
+        $messages = R::findAll("messages", "author = ? OR to_name = ?", [$_SESSION["name"], $_SESSION["name"]]);
+        foreach ($messages as $mess)
+            R::trash($mess);
         R::selectDatabase( 'default' );
         return $id ? ["STATUS"=>"OK"]:["STATUS"=>"ERROR"];
     }
@@ -61,7 +65,7 @@ class user
         if(!$this->name or !$this->password)
             return ["STATUS" => "ERROR", "ERROR" => "Заполните все поля"];
 
-        $find_user = R::findOne('user', 'name = ? AND password = ?', [$this->name, md5(md5(trim($this->password)))]);
+        $find_user = R::findOne('user', 'name = ? AND password = ?', [$this->name, md5(md5($this->password))]);
         return $find_user ? ["STATUS" => "OK"]:["STATUS" => "ERROR", "ERROR" => "Неверное имя или пароль"];
     }
 
@@ -73,7 +77,6 @@ class user
         $new_name_user = R::findOne('user', 'name = ?', [$name]);
         if($new_name_user)
             return ["STATUS"=>"ERROR", "ERROR"=>"Пользователь существует"];
-        unset($new_name_user);
 
         $new_name_user = R::findOne('user', 'name = ?', [$this->name]);
         $new_name_user->name = $name;
@@ -84,17 +87,33 @@ class user
         foreach ($change_users_friends as $user) {
             $count = substr_count($user->notifications,",1($this->name $name)");
             $count++;
-            $user->friends = str_replace(",$this->name,", ",$name,", $user->friends);
             $user->notifications .= ",1($this->name $name)$count,";
+            $user->friends = str_replace(",$this->name,", ",$name,", $user->friends);
             R::store($user);
         }
+
+        // меняю данные сообщений
+        R::selectDatabase("messages");
+        $messages = R::findAll("messages", "author = ? OR to_name = ?", [$_SESSION["name"], $_SESSION["name"]]);
+        foreach ($messages as $mess)
+        {
+            if ($mess->author == $_SESSION["name"])
+                $mess->author = $name;
+            else
+                $mess->to_name = $name;
+            R::store($mess);
+        }
+        R::selectDatabase("default");
         return ["STATUS"=>"OK", "NEW_NAME"=>$name];
     }
 
     public function change_pass($pass)
     {
+        if(!$pass)
+            return ["STATUS" => "ERROR", "ERROR" => "Заполните все поля"];
+
         $user = R::findOne("user", "name = ?", [$this->name]);
-        $user->password = md5(md5(trim($pass)));
+        $user->password = md5(md5($pass));
         $id = R::store($user);
         return $id ? ["STATUS"=>"OK"]:["STATUS"=>"ERROR"];
     }
@@ -104,7 +123,7 @@ class user
         if(!$name)
             return ["STATUS" => "ERROR", "ERROR" => "Заполните все поля"];
 
-        if(strtolower($name) == $this->name)
+        if($name == $this->name)
             return ["STATUS" => "ERROR", "ERROR" => "Самого себя нельзя добавть в друзья"];
 
         $friend = R::findOne('user', 'name = ?', [$name]);
@@ -114,17 +133,16 @@ class user
 
         $user = R::findOne('user', 'name = ?', [$this->name]);
 
-        if(stristr(",".strtolower($name).",", $user->friends))
+        if(preg_match("/,$name,/", $user->friends))
             return ["STATUS"=>"ERROR", "ERROR"=>"Уже в друзьях"];
 
-        $user->friends = $user->friends.",".$name.",";
+        $user->friends = $user->friends.",$name,";
         R::store($user);
 
         $count = substr_count($user->notifications,",3($this->name)");
         $count++;
         $friend->notifications .= ",3($this->name)$count,";
         R::store($friend);
-
         return ["STATUS"=>"OK", "NEW_FR"=>$name];
     }
 
@@ -137,7 +155,7 @@ class user
         $deleted_friend = R::findOne('user', 'name = ?', [$name]);
         if ($deleted_friend)
         {
-            $count = substr_count($user->notifications,",4($this->name)");
+            $count = substr_count($deleted_friend->notifications,",4($this->name)");
             $count++;
             $deleted_friend->notifications .= ",4($this->name)$count,";
             R::store($deleted_friend);
@@ -145,20 +163,21 @@ class user
         return $id ? ["STATUS"=>"OK"]:["STATUS"=>"ERROR"];
     }
 
-    public function get_wall($name)
+    public function get_wall()
     {
-        if(!$name)
+        if(!$this->name)
             return ["STATUS"=>"ERROR", "ERROR"=>"Не задан автор постов"];
 
         R::selectDatabase( 'posts' );
-        $posts = R::findAll( 'posts', 'author = ?', [$name] );
+        $posts = R::findAll( 'posts', 'author = ?', [$this->name] );
         R::selectDatabase( 'default' );
 
-        $wall = "";
         if(!$posts)
             return ["STATUS"=>"OK", "TEXT"=>"<span id='no_posts'>Нет записей</span>"];
+
         else
             {
+                $wall = "";
                 foreach ($posts as $post)
                 {
                     $f = "<form method='POST' id='del_p'>
@@ -166,7 +185,7 @@ class user
                             <input type='hidden' name='id' value=\"$post->id\">
                             <button type='submit' onclick='del_post_block(\"$post->id\"); return false;'>delete</button>
                         </form>";
-                    $wall .= $name==$_SESSION["name"]
+                    $wall .= $this->name==$_SESSION["name"]
                         ? "<div>
                             <div class='post' id=\"$post->id\">
                             <div class='title'>$post->title <span style='opacity: 0.6'>@$post->author</span></div>
@@ -182,17 +201,17 @@ class user
                             <br>
                         </div>";
                 }
+                return ["STATUS"=>"OK", "TEXT"=>$wall];
             }
-        return ["STATUS"=>"OK", "TEXT"=>$wall];
     }
 
     public function get_notif()
     {
         $user = R::findOne('user', 'name = ?', [$this->name]);
-        preg_match_all('/,([0-9])[(](.+?)[)]([0-9])+?,/', $user->notifications, $m);
+        preg_match_all('/,([0-9])[(](.+?)[)]([0-9]+)?,/', $user->notifications, $m);
         $content = "";
         foreach ($m[0] as $notif) {
-            preg_match('/,([0-9])[(](.+?)[)]([0-9])+?,/', $notif, $notif_data);
+            preg_match('/,([0-9])[(](.+?)[)]([0-9]+)?,/', $notif, $notif_data);
             $code = $notif_data[1];
             $argv = explode(" ",$notif_data[2]);
             switch ($code)

@@ -6,9 +6,9 @@ class post
 
     public function __construct($author=false, $title=false, $text=false)
     {
-        $this->author = $author;
-        $this->title = $title;
-        $this->text = $text;
+        $this->author = strtolower(trim($author));
+        $this->title = trim($title);
+        $this->text = trim($text);
         R::selectDatabase( 'posts' );
     }
 
@@ -17,11 +17,11 @@ class post
         if(!($this->title and $this->text))
             return ["STATUS" => "ERROR", "ERROR" => "Заполните все поля"];
 
-        $db = R::dispense('posts');
-        $db->author = $this->author;
-        $db->title = $this->title;
-        $db->text = $this->text;
-        $id = R::store($db);
+        $post = R::dispense('posts');
+        $post->author = $this->author;
+        $post->title = $this->title;
+        $post->text = $this->text;
+        $id = R::store($post);
 
         return ["STATUS" => "OK", "block"=>
                 "<div>
@@ -40,7 +40,6 @@ class post
 
     public function change_author($name)
     {
-        R::selectDatabase( 'posts' );
         $us = R::findAll('posts', 'author = ?', [$this->author]);
         foreach ($us as $u) {
             $u->author = $name;
@@ -50,7 +49,6 @@ class post
 
     public function delete_post($id)
     {
-        R::selectDatabase( 'posts' );
         $post = R::load('posts', $id);
         if ($post->author == $this->author)
         {
@@ -58,9 +56,6 @@ class post
             return ["STATUS"=>"OK"];
         }
         else
-        {
             return ["STATUS"=>"ERROR", "TEXT"=>"Вы не можете удалить этот пост"];
-        }
-
     }
 }
