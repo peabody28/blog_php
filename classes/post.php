@@ -15,7 +15,7 @@ class post
     public function add()
     {
         if(!($this->title and $this->text))
-            return ["STATUS" => "ERROR", "ERROR" => "Заполните все поля"];
+            return ["status" => "ERROR", "error" => "Заполните все поля"];
 
         $post = R::dispense('posts');
         $post->author = $this->author;
@@ -23,7 +23,7 @@ class post
         $post->text = $this->text;
         $id = R::store($post);
 
-        return ["STATUS" => "OK", "block"=>
+        return ["status" => "OK", "block"=>
                 "<div>
                     <div class='post' id=\"$id\">
                     <div class='title'>$this->title <span style='opacity: 0.6'>@$this->author</span></div>
@@ -42,7 +42,7 @@ class post
     {
         $us = R::findAll('posts', 'author = ?', [$this->author]);
         foreach ($us as $u) {
-            $u->author = $name;
+            $u->author = strtolower(trim($name));
             R::store($u);
         }
     }
@@ -50,12 +50,10 @@ class post
     public function delete_post($id)
     {
         $post = R::load('posts', $id);
-        if ($post->author == $this->author)
-        {
-            R::trash($post);
-            return ["STATUS"=>"OK"];
-        }
-        else
-            return ["STATUS"=>"ERROR", "TEXT"=>"Вы не можете удалить этот пост"];
+        return ($post->author == $this->author)
+            ?
+            (R::trash($post)?["status"=>"OK"]:["status"=>"ERROR"])
+            :
+            ["status"=>"ERROR", "error"=>"Вы не можете удалить этот пост"];
     }
 }

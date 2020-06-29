@@ -1,9 +1,9 @@
 <?php
 session_start();
+require "vendor/autoload.php";
 require_once "in.php";
 access();
 
-require "vendor/autoload.php";
 
 $content = "<form id='dl' method='POST'>
                 <input type=\"hidden\" name=\"code\" value=\"delete\">
@@ -27,7 +27,7 @@ $content = "<form id='dl' method='POST'>
             </form>
             <br>
             <br>
-            <div id=\"hh\"></div>";
+            <div id=\"message\"></div>";
 
 $loader = new Twig\Loader\FilesystemLoader(__DIR__.'/templates');
 $twig = new Twig\Environment($loader);

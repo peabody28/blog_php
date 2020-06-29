@@ -6,7 +6,7 @@ function del_notif(id) {
         data: param,
         success: function (res) {
             let response = JSON.parse(res)
-            if(response["STATUS"]==="OK")
+            if(response["status"]==="OK")
             {
                 $(".delete_notif[id='"+ id +"']").parent().parent().remove()
                 let count = ($("#notif_count").text())-1

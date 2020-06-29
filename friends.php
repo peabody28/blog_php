@@ -1,10 +1,9 @@
 <?php
 session_start();
+require_once "vendor/autoload.php";
 require_once "in.php";
 access();
 
-require_once "db.php";
-require_once "vendor/autoload.php";
 
 $content = "
 <form id='add_f' method='post'>

@@ -19,14 +19,16 @@ $('#rn').submit(function () {
         data: $(this).serialize(),
         success: function (res) {
             let response = JSON.parse(res);
-            if(response['STATUS']==="OK")
+            if(response['status']==="OK")
             {
-                $('#hh').html("<span style='color: green'>succesfuly</span>");
-                $("#rn [name=name]").attr("placeholder", "имя сейчас: "+response['NEW_NAME']);
+                $('#message').html("<span style='color: green; font-weight: bold;'>Имя изменено</span>");
+                $("#rn [name=name]").attr("placeholder", "имя сейчас: "+response['new_name']);
                 $("#rn")[0].reset();
             }
             else
-                $('#hh').html("<span style='color: red'>"+response["ERROR"]+"</span>");
+                $('#message').html("<span style='color: red; font-weight: bold;'>"+response["error"]+"</span>");
+            setTimeout(function(){ $('#message').html(""); }, 7000);
+
         }
     });
     return false;
@@ -39,10 +41,12 @@ $('#change_pass').submit(function () {
         data: $(this).serialize(),
         success: function (res) {
             let response = JSON.parse(res);
-            if(response['STATUS']==="OK")
-                $('#hh').html("<span style='color: green'>succesfuly</span>");
+            if(response['status']==="OK")
+                $('#message').html("<span style='color: green; font-weight: bold;'>Пароль изменен</span>");
             else
-                $('#hh').html("<span style='color: red'>"+response["STATUS"]+"</span>");
+                $('#message').html("<span style='color: red; font-weight: bold;'>"+response["error"]+"</span>");
+            setTimeout(function(){ $('#message').html(""); }, 7000);
+
         }
     });
     return false;

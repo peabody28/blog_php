@@ -1,9 +1,9 @@
 <?php
 session_start();
+require_once "vendor/autoload.php";
 require_once "in.php";
 access();
 
-require_once "vendor/autoload.php";
 
 $loader = new Twig\Loader\FilesystemLoader(__DIR__.'/templates');
 $twig = new Twig\Environment($loader);

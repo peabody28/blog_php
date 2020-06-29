@@ -5,10 +5,10 @@ $('form').submit(function () {
         data: $(this).serialize(),
         success: function (res) {
             let response = JSON.parse(res);
-            if(response['STATUS']==="OK")
+            if(response['status']==="OK")
                 $(location).attr("href", "/main.php");
             else
-                $('#hh').html(response["ERROR"])
+                $('#error').html(response["error"])
         }
     });
     return false

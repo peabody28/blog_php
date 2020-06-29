@@ -28,7 +28,9 @@ body #wrapper .container #down #reg {
   justify-content: center;
   color: inherit;
 }
-body #wrapper .container #hh {
+body #wrapper .container #error {
+  color: red;
+  font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;

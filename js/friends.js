@@ -6,17 +6,17 @@ $("#add_f").submit(function () {
         data: $(this).serialize(),
         success: function (res) {
             let response = JSON.parse(res);
-            if (response["STATUS"]==="OK")
+            if (response["status"]==="OK")
             {
                 $('#mess').html("")
                 let st =    "<div class='friend col-sm-5'>"+
-                                "<div class='fr_div'><button class='fr' type='button' onclick='get_wall(\""+response["NEW_FR"]+"\"); return false;'>"+response["NEW_FR"]+"</button></div>"+
-                                "<div class='fr_div'><button id='send' onclick='send_mess(\""+response["NEW_FR"]+"\"); return false;'>send mess</button></div>"+
+                                "<div class='fr_div'><button class='fr' type='button' onclick='get_wall(\""+response["new_fr_name"]+"\"); return false;'>"+response["new_fr_name"]+"</button></div>"+
+                                "<div class='fr_div'><button id='send' onclick='send_mess(\""+response["new_fr_name"]+"\"); return false;'>send mess</button></div>"+
                                 "<div class='fr_div'>"+
                                     "<form method='POST'>"+
                                         "<input type='hidden' name='fr_name' value=\"$fr\">"+
                                         "<input type='hidden' name='code' value='remove_from_friends'>"+
-                                        "<div class='del_fr' type='submit' onclick='del(\""+response["NEW_FR"]+"\"); return false;'>удалить</div>" +
+                                        "<div class='del_fr' type='submit' onclick='del(\""+response["new_fr_name"]+"\"); return false;'>удалить</div>" +
                                     "</form>"+
                                 "</div>"+
                                 "<br><br>"+
@@ -24,7 +24,7 @@ $("#add_f").submit(function () {
                 $('#wall').append(st);
             }
             else
-                $('#mess').html(response["ERROR"])
+                $('#mess').html(response["error"])
             $("#add_f")[0].reset();
         }
     });
@@ -48,5 +48,5 @@ function del(name){
 }
 
 function send_mess(name) {
-    $(location).attr("href", "/messenger.php?name="+name)
+    $(location).attr("href", "/messenger.php?interlocutor="+name)
 }

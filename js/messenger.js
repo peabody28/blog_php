@@ -5,14 +5,13 @@ $('#add_mess').submit(function () {
         data: $(this).serialize(),
         success: function (res) {
             let response = JSON.parse(res)
-            if(response["STATUS"]=="OK")
+            if(response["status"]=="OK")
             {
                 $("#error").html("")
-                $("#per").append(response["mess"])
+                $("#per").append(response["message"])
             }
-
             else
-                $("#error").html(response["ERROR"])
+                $("#error").html(response["error"])
             $('#add_mess')[0].reset();
         }
     })
@@ -22,6 +21,7 @@ $('#add_mess').submit(function () {
 function get_mess() {
 
     let fr = ($(location).attr( 'href' ).split('?'))[1];
+    console.log(fr)
     $.ajax({
         url: "/server.php",
         type: "POST",

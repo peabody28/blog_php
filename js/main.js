@@ -17,8 +17,8 @@ $("#rename").submit(function () {
         data: $(this).serialize(),
         success: function (res) {
             let response = JSON.parse(res);
-            if(response['STATUS']!=="OK")
-                $('#hh').html(response["ERROR"])
+            if(response['status']!="OK")
+                $('#hh').html(response["error"])
         }
     });
     return false;
@@ -31,7 +31,7 @@ $("#exit_form").submit(function () {
         data: $(this).serialize(),
         success: function (res) {
             let response = JSON.parse(res);
-            if(response["STATUS"]==="OK"){
+            if(response["status"]==="OK"){
                 $(location).attr("href", "/login.php")
             }
         }
@@ -54,7 +54,7 @@ function get_notif() {
                 if(!$("#notif_count").length)
                     $("#notif").after().append("&nbsp;<div id='notif_count'></div>")
                 if(location.href=="http://127.0.0.2/notif.php" || location.href=="http://192.168.1.102/notif.php" )
-                    $('#content').html(response["TEXT"])
+                    $('#content').html(response["text"])
                 $('#notif_count').html(count)
             }
             else

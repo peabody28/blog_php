@@ -18,7 +18,7 @@ $("#add_post").submit(function () {
         success: function (res) {
 
             let response = JSON.parse(res);
-            if(response["STATUS"]==="OK")
+            if(response["status"]==="OK")
             {
                 if($('#no_posts'))
                     $("#no_posts").remove()
@@ -26,7 +26,7 @@ $("#add_post").submit(function () {
                 $("#error").html("")
             }
             else
-                $("#error").html(response["ERROR"])
+                $("#error").html(response["error"])
             $("#add_post")[0].reset();
         }
     });

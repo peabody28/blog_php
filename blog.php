@@ -1,11 +1,10 @@
 <?php
 session_start();
-require_once "in.php";
 require_once "classes/user.php";
+require_once "vendor/autoload.php";
+require_once "in.php";
 access();
 
-
-require_once "vendor/autoload.php";
 
 $content = "<button id='add'>Добавить запись</button>
          <button id='sv'>Свернуть</button>
@@ -28,7 +27,7 @@ $content = "<button id='add'>Добавить запись</button>
 
 $user = new user( $_SESSION["name"] );
 $wall = $user->get_wall($_SESSION["name"]);
-$content .= $wall["TEXT"];
+$content .= $wall["wall"];
 
 $loader = new Twig\Loader\FilesystemLoader(__DIR__.'/templates');
 $twig = new Twig\Environment($loader);
