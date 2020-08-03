@@ -4,15 +4,16 @@
   pointer-events: none;
   cursor: default;
 }
-.container-fluid {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 #per {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 500px;
   font-size: 18px;
   background-color: white;
-  word-wrap: break-word;
+}
+#per .row span {
+  width: inherit;
+  overflow-wrap: break-word;
 }
 #time {
   opacity: 0.6;

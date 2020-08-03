@@ -7,22 +7,23 @@ access();
 
 
 $content = "<button id='add'>Добавить запись</button>
-         <button id='sv'>Свернуть</button>
-        <div class='post' id='forma'>
-        <form method='POST' id='add_post'>
-            <input type='hidden' name='code' value='add_post'>
-            <input type='hidden' name='author' value=\"$_SESSION[name]\">
-            <div class='title'>
-                <input type='text' name='title' placeholder='Имя поста' autocomplete='off' >
-            </div>
-            <div class='text'>
-                <textarea name='text' placeholder='Текст' autocomplete='off'></textarea>
-                <button type='submit'>Да</button>
-            </div>
-         </form>
-         <div id='error'></div>
-         </div>
-         <br><br>";
+             <button id='sv'>Свернуть</button>
+             <br>
+             <br>
+             <div id='forma'>
+             <form method='POST' id='add_post'>
+                 <input type='hidden' name='code' value='add_post'>
+                 <input type='hidden' name='author' value=\"$_SESSION[name]\">
+                 <input type='text' name='title' placeholder='Заголовок поста' autocomplete='off' >
+                 <br>
+                 <br>
+                 <textarea name='text' placeholder='Текст' autocomplete='off'></textarea>
+                 <br>
+                 <button type='submit'>Добавить</button>
+                 <div id='error'></div>
+             </form>
+             </div>
+             <br><br>";
 
 
 $user = new user( $_SESSION["name"] );

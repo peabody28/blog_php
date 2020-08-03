@@ -5,8 +5,10 @@ $('#dl').submit(function () {
         url: "/server.php",
         type: "POST",
         data: $(this).serialize(),
-        success: function () {
-            $(location).attr("href", "/login.php");
+        success: function (res) {
+            let response = JSON.parse(res)
+            if(response["status"]=="OK")
+                $(location).attr("href", "/login.php");
         }
     });
     return false

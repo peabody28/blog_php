@@ -1,4 +1,6 @@
 .idea/
 1.php
 /vendor
-
+tests/
+other/
+.phpunit.result.cache

@@ -1,5 +1,8 @@
 <?php
 
+
+
+
 class user
 {
     public $name, $password;
@@ -11,33 +14,13 @@ class user
         R::selectDatabase( 'default' );
     }
 
-    public function add()
-    {
-        if(!$this->name or !$this->password)
-            return ["status" => "ERROR", "error" => "Заполните все поля"];
-
-        if(!preg_match("/^[a-zA-Z0-9]+$/",$this->name))
-            return ["status" => "ERROR",
-                "error" => "Логин может состоять только из букв английского алфавита и цифр"];
-
-        $find_user = R::findOne('user', 'name = ?', [$this->name]);
-        if ($find_user)
-            return ["status" => "ERROR", "error" => "Пользователь существует"];
-
-        $user = R::dispense('user');
-        $user->name = $this->name;
-        $user->password = md5(md5($this->password));
-        $user->friends = "";
-        $user->notifications = "";
-        $id = R::store($user);
-        return $id ? ["status" => "OK"]:["status" => "ERROR", "error" => "Ошибка при добавлении в базу"];
-
-    }
 
     public function delete()
     {
         $user = R::findOne('user', 'name = ?', [$this->name]);
-        $id = R::trash($user);
+        if (!$user)
+            return ["status"=>"ERROR"];
+        R::trash($user);
 
         //отсылаю уведомления об удаленном друге
         $users = R::findAll("user", "friends LIKE ?", ["%,$this->name,%"]);
@@ -57,16 +40,7 @@ class user
         foreach ($messages as $mess)
             R::trash($mess);
         R::selectDatabase( 'default' );
-        return $id ? ["status"=>"OK"]:["status"=>"ERROR"];
-    }
-
-    public function search()
-    {
-        if(!$this->name or !$this->password)
-            return ["status" => "ERROR", "error" => "Заполните все поля"];
-
-        $find_user = R::findOne('user', 'name = ? AND password = ?', [$this->name, md5(md5($this->password))]);
-        return $find_user ? ["status" => "OK"]:["status" => "ERROR", "error" => "Неверное имя или пароль"];
+        return ["status"=>"OK"];
     }
 
     public function rename($name)
@@ -75,13 +49,13 @@ class user
         if(!$name)
             return ["status" => "ERROR", "error" => "Заполните все поля"];
 
-        $new_name_user = R::findOne('user', 'name = ?', [$name]);
-        if($new_name_user)
-            return ["status"=>"ERROR", "error"=>"Пользователь существует"];
-
         if(!preg_match("/^[a-zA-Z0-9]+$/",$name))
             return ["status" => "ERROR",
                 "error" => "Логин может состоять только из букв английского алфавита и цифр"];
+
+        $new_name_user = R::findOne('user', 'name = ?', [$name]);
+        if($new_name_user)
+            return ["status"=>"ERROR", "error"=>"Пользователь существует"];
 
         $new_name_user = R::findOne('user', 'name = ?', [$this->name]);
         $new_name_user->name = $name;
@@ -99,13 +73,13 @@ class user
 
         // меняю данные сообщений
         R::selectDatabase("messages");
-        $messages = R::findAll("messages", "author = ? OR to_name = ?", [$this->name, $this->name]);
+        $messages = R::findAll("messages", "author = ? OR interlocutor = ?", [$this->name, $this->name]);
         foreach ($messages as $mess)
         {
             if ($mess->author == $this->name)
                 $mess->author = $name;
             else
-                $mess->to_name = $name;
+                $mess->interlocutor = $name;
             R::store($mess);
         }
         R::selectDatabase("default");
@@ -203,20 +177,24 @@ class user
                     $f = "<form method='POST' id='del_p'>
                             <input type='hidden' name='code' value='delete_post'>
                             <input type='hidden' name='id' value=\"$post->id\">
-                            <button type='submit' onclick='del_post_block(\"$post->id\"); return false;'>delete</button>
+                            <button id='del_p' type='submit' onclick='del_post_block(\"$post->id\"); return false;'>x</button>
                         </form>";
                     $wall .= $this->name==$author
                         ? "<div>
-                            <div class='post' id=\"$post->id\">
-                            <div class='title'>$post->title <span style='opacity: 0.6'>@$post->author</span></div>
-                            <div class='text'>$post->text</div>
-                            $f
+                            <div class='post container p-0' id=\"$post->id\">
+                                <div class='title container row m-0 p-0'>
+                                     <div class='col-11'>$post->title&nbsp;&nbsp;&nbsp;&nbsp;<span style='opacity: 0.6'>@$post->author</span></div>
+                                     <div class='col-1 pr-0'>$f</div>
+                                </div>  
+                                <div class='text row m-0 p-1'><div class='col-12'>$post->text</div></div>
                             </div>
                             <br>
                         </div>" : "<div>
-                            <div class='post' id=\"$post->id\">
-                            <div class='title'>$post->title <span style='opacity: 0.6'>@$post->author</span></div>
-                            <div class='text'>$post->text</div>
+                            <div class='post container p-0' id=\"$post->id\">
+                                <div class='title container row m-0 p-0'>
+                                     <div class='col-12'>$post->title&nbsp;&nbsp;&nbsp;&nbsp;<span style='opacity: 0.6'>@$post->author</span></div>
+                                </div>  
+                                <div class='text row m-0 p-1'><div class='col-12'>$post->text</div></div>
                             </div>
                             <br>
                         </div>";
@@ -298,11 +276,11 @@ class user
         $message = R::dispense('messages');
         $message->author = $this->name;
         $message->interlocutor = $message_data["interlocutor"];
-        $message->text = $message_data["text"];
+        $message->text = htmlspecialchars($message_data["text"]);
         $message->time = date("H:i");
         R::store($message);
         R::selectDatabase("default");
-        $mess_block = "<span><strong>$message->author</strong>:&nbsp;&nbsp;$message->text</span><span id='time'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$message->time</span><br>";
+        $mess_block = "<div class='row col-12'><span><strong>$message->author</strong>:&nbsp;&nbsp;$message->text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id='time'>$message->time</span></span></div>";
 
         return  ["status"=>"OK", "message"=>$mess_block];
     }
@@ -325,13 +303,15 @@ class user
         $messages = R::findAll("messages",
             "(author = ? AND interlocutor = ?) OR (author = ? AND interlocutor = ?)",
             [$this->name, $interlocutor, $interlocutor, $this->name]);
-        $mess_list = "";
-        foreach ($messages as $mess)
-            $mess_list .= "<span><strong>$mess->author</strong>:&nbsp;&nbsp;$mess->text</span><span id='time'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$mess->time</span><br>";
+        $messages_list = "";
+        foreach ($messages as $message)
+            $messages_list .= "<div class='row col-12'><span><strong>$message->author</strong>:&nbsp;&nbsp;$message->text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id='time'>$message->time</span></span></div>";
+
         R::selectDatabase("default");
 
-        return ["status"=>"OK", "messages"=>$mess_list];
+        return ["status"=>"OK", "messages"=>$messages_list];
     }
 
 
 }
+

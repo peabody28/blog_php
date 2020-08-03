@@ -11,17 +11,15 @@
 }
 #forma
 {
+  [name=title], [name=text]
+  {
+    width: 100%;
+  }
+  [name=text]
+  {
+    height: 200px;
+  }
   display: none;
-  .title, .text
-  {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .text
-  {
-    height: 60px;
-  }
   #error
   {
     color: red;
@@ -34,18 +32,33 @@
   }
 }
 
+
+
 .post
 {
+  .title, .text
+  {
+    word-wrap: break-word;
+  }
   background-color: #fff;
-  width: 100%;
-  min-height: 100px;
   border: 1px solid #dcdcdc;
+
   .title
   {
-    width: 100%;
-    height: 40px;
     font-size: 20px;
     border: 1px solid #0f131f;
+    justify-content: space-between;
+    #del_p
+    {
+      border: none;
+      height: 30px;
+      width: 100%;
+      background-color: indianred;
+    }
+  }
+  .text
+  {
+    min-height: 60px;
   }
 }
 

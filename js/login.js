@@ -1,6 +1,6 @@
 $('form').submit(function () {
     $.ajax({
-        url: "/server.php",
+        url: "/login.php",
         type: "POST",
         data: $(this).serialize(),
         success: function (res) {

@@ -9,6 +9,7 @@ $('#add_mess').submit(function () {
             {
                 $("#error").html("")
                 $("#per").append(response["message"])
+                $("#per").scrollTop(99999999999999999);
             }
             else
                 $("#error").html(response["error"])
@@ -21,14 +22,13 @@ $('#add_mess').submit(function () {
 function get_mess() {
 
     let fr = ($(location).attr( 'href' ).split('?'))[1];
-    console.log(fr)
     $.ajax({
         url: "/server.php",
         type: "POST",
         data: "code=get_messages&"+fr,
         success: function (res) {
             let response = JSON.parse(res)
-            $("#per").html(response["messages"])
+            $('#per').html(response["messages"])
         }
     });
     return false;

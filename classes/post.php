@@ -7,8 +7,8 @@ class post
     public function __construct($author=false, $title=false, $text=false)
     {
         $this->author = strtolower(trim($author));
-        $this->title = trim($title);
-        $this->text = trim($text);
+        $this->title = htmlspecialchars(trim($title));
+        $this->text = str_replace("\r\n", "<br>", htmlspecialchars(trim($text))); ;
         R::selectDatabase( 'posts' );
     }
 
@@ -24,18 +24,22 @@ class post
         $id = R::store($post);
 
         return ["status" => "OK", "block"=>
-                "<div>
-                    <div class='post' id=\"$id\">
-                    <div class='title'>$this->title <span style='opacity: 0.6'>@$this->author</span></div>
-                    <div class='text'>$this->text</div>
-                    <form method='POST'>
-                        <input type='hidden' name='code' value='delete_post'>
-                        <input type='hidden' name='id' value=\"$id\">
-                        <button type='submit' onclick='del_post_block(\"$id\"); return false;'>delete</button>
-                    </form>
-                    </div>
-                    <br>
-                </div>"];
+                        "<div>
+                            <div class='post container p-0' id=\"$post->id\">
+                                <div class='title container row m-0 p-0'>
+                                     <div class='col-11'>$post->title&nbsp;&nbsp;&nbsp;&nbsp;<span style='opacity: 0.6'>@$post->author</span></div>
+                                     <div class='col-1 pr-0'>
+                                     <form method='POST' id='del_p'>
+                                        <input type='hidden' name='code' value='delete_post'>
+                                        <input type='hidden' name='id' value=\"$post->id\">
+                                        <button id='del_p' type='submit' onclick='del_post_block(\"$post->id\"); return false;'>x</button>
+                                    </form>
+                                     </div>
+                                </div>  
+                                <div class='text row m-0 p-1'><div class='col-12'>$post->text</div></div>
+                            </div>
+                            <br>
+                        </div>"];
     }
 
     public function change_author($name)
