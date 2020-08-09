@@ -1,5 +1,5 @@
 <?php
-
+require_once __DIR__."/../db.php";
 class Post
 {
     public $id, $author_id, $title, $text, $tags;

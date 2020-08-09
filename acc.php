@@ -6,7 +6,7 @@ access();
 
 
 $content = "<form id='dl' method='POST'>
-                <input type=\"hidden\" name=\"code\" value=\"delete\">
+                <input type=\"hidden\" name=\"delete\">
                 <button type=\"submit\">Delete</button>
             </form>
             <br>

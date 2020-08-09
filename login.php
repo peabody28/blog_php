@@ -1,9 +1,7 @@
 <?php
-require_once "vendor/autoload.php";
+require_once("vendor/autoload.php");
 require_once("classes/User.php");
 require_once("classes/UserTools.php");
-require_once("classes/UsersTable.php");
-require_once("classes/Session.php");
 require_once("db.php");
 
 $data = $_POST;
@@ -11,21 +9,12 @@ $data = $_POST;
 if (isset($data["submit"])) {
 
     $user = new User();
-    $user->name = $data["name"];
-    $user->password = $data["password"];
+    $user->name = strtolower(trim($data["name"]));
+    $user->password = trim($data["password"]);
 
     $tools = new UserTools();
-    $resp = $tools->login($user);
+    $resp = $tools->login($user, isset($data["check"]));
 
-    if ($resp["status"] === "OK")
-    {
-        $session = new Session();
-        $session->user_id = $resp["id"];
-        $session->username = $user->name;
-        if ($data["check"])
-            $session->setCookie();
-        $session->create();
-    }
     echo json_encode($resp);
 }
 else

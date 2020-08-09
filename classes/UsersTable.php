@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__."/../db.php";
 
 
 class UsersTable
@@ -24,27 +25,19 @@ class UsersTable
 
     public function update(User &$obj)
     {
-        R::findOne("users", "id = ?", [$obj->id]);
+        $user = R::findOne("users", "id = ?", [$obj->id]);
+        $user->name = $obj->name;
+        $user->password = $obj->password;
+        $user->friends = serialize($obj->friends);
+        return R::store($user);
     }
 
     public function delete(User &$obj)
     {
         $user = R::findOne("users", "id = ?", [$obj->id]);
         if($user)
-        {
-            // вызываю класс сесии
-            // отсылаю уведомления
-            // удаляю посты
-            R::trash($user);
-            return true;
-        }
+            return (R::trash($user))?["status"=>"OK"]:["status"=>"ERROR", "error"=>"Не удалось удалить пользователя"];
         else
-        {
-            pass();
-            return false;
-            // вывожу ошибку
-        }
+            return ["status"=>"ERROR", "error"=>"Пользователя не существует"];
     }
-
-
 }

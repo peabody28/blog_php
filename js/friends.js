@@ -1,7 +1,8 @@
 
 $("#add_f").submit(function () {
+    console.log($(this).serialize())
     $.ajax({
-        url: "/server.php",
+        url: "/friends.php",
         type: "POST",
         data: $(this).serialize(),
         success: function (res) {
@@ -9,19 +10,7 @@ $("#add_f").submit(function () {
             if (response["status"]==="OK")
             {
                 $('#mess').html("")
-                let st =    "<div class='friend col-sm-5'>"+
-                                "<div class='fr_div'><button class='fr' type='button' onclick='get_wall(\""+response["new_fr_name"]+"\"); return false;'>"+response["new_fr_name"]+"</button></div>"+
-                                "<div class='fr_div'><button id='send' onclick='send_mess(\""+response["new_fr_name"]+"\"); return false;'>send mess</button></div>"+
-                                "<div class='fr_div'>"+
-                                    "<form method='POST'>"+
-                                        "<input type='hidden' name='fr_name' value=\"$fr\">"+
-                                        "<input type='hidden' name='code' value='remove_from_friends'>"+
-                                        "<div class='del_fr' type='submit' onclick='del(\""+response["new_fr_name"]+"\"); return false;'>удалить</div>" +
-                                    "</form>"+
-                                "</div>"+
-                                "<br><br>"+
-                            "</div>";
-                $('#wall').append(st);
+                $('#wall').append(response["fr_block"]);
             }
             else
                 $('#mess').html(response["error"])
@@ -31,10 +20,6 @@ $("#add_f").submit(function () {
     return false;
 });
 
-function get_wall(name)
-{
-    $(location).attr("href", "/friend.php?name="+name)
-}
 
 function del(name){
     $.ajax({
@@ -45,8 +30,4 @@ function del(name){
             $(".fr:contains("+name+")").parent().parent().remove()
         }
     });
-}
-
-function send_mess(name) {
-    $(location).attr("href", "/messenger.php?interlocutor="+name)
 }

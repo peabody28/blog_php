@@ -1,7 +1,7 @@
 <?php
+require_once __DIR__."/../db.php";
 
-
-class PostTable
+class PostsTable
 {
     public function insert(Post &$obj)
     {
@@ -27,16 +27,9 @@ class PostTable
     {
         $post = R::findOne("posts", "id = ?", [$obj->id]);
         if($post)
-        {
-            R::trash($post);
-            return true;
-        }
+            return R::trash($post);
         else
-        {
-            pass();
             return false;
-            // вывожу ошибку
-        }
     }
 
     public function getPostsByAuthor(User $author)

@@ -1,10 +1,8 @@
 <?php
-session_start();
 require_once "vendor/autoload.php";
 require_once "classes/user.php";
 require_once "in.php";
 access();
-
 
 $loader = new Twig\Loader\FilesystemLoader(__DIR__.'/templates');
 $twig = new Twig\Environment($loader);
@@ -12,7 +10,7 @@ $twig = new Twig\Environment($loader);
 if (!isset($_GET["interlocutor"]))
 {
     $content = "
-            <form method='get'>
+            <form method='GET'>
                 <label for='name'>Укажите имя друга</label><br>
                 <input type='text' name='interlocutor'>
                 <button type='submit'>ok</button>
@@ -21,7 +19,7 @@ if (!isset($_GET["interlocutor"]))
 elseif ($_SESSION["name"] == $_GET["interlocutor"]) {
     $error = "Вы не можете писать себе";
     $content = "
-            <form method='get'>
+            <form method='GET'>
                 <label for='name'>Укажите имя друга</label><br>
                 <input type='text' name='interlocutor'>
                 <button type='submit'>ok</button>
@@ -30,7 +28,7 @@ elseif ($_SESSION["name"] == $_GET["interlocutor"]) {
 }
 else
     {
-        $content = "<form method='get'>
+        $content = "<form method='GET'>
                         <label for='name'>Укажите имя друга</label><br>
                         <input type='text' name='interlocutor' placeholder='Сейчас: $_GET[interlocutor]'>
                         <button type='submit'>ok</button>
@@ -74,6 +72,8 @@ else
                     <div id='error'>$resp[error]</div>";
 
     }
+
+
     echo $twig->render('main.html',
         ['title'=>"messenger", 'css'=>"/css/messenger.css",
             'content'=>$content, "js"=>"/js/messenger.js"] );

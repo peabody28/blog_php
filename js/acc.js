@@ -1,8 +1,9 @@
 $('#dl').submit(function () {
     if(!confirm('Подтвердить?'))
         return false;
+    console.log($(this).serialize())
     $.ajax({
-        url: "/server.php",
+        url: "/delete.php",
         type: "POST",
         data: $(this).serialize(),
         success: function (res) {

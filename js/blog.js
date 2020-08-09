@@ -12,11 +12,10 @@ $("#sv").click(function () {
 
 $("#add_post").submit(function () {
     $.ajax({
-        url: "/server.php",
+        url: "/blog.php",
         type: "POST",
         data: $(this).serialize(),
         success: function (res) {
-
             let response = JSON.parse(res);
             if(response["status"]==="OK")
             {
@@ -34,15 +33,36 @@ $("#add_post").submit(function () {
 });
 
 
-function del_post_block(id) {
-    let param = $(".post[id=" + id + "] form").serialize()
+
+$(".del_post").submit(function del_post() {
     $.ajax({
-        url: "/server.php",
+        url: "/blog.php",
         type: "POST",
-        data: param,
+        data: $(this).serialize(),
         success: function (res) {
-            let id = param.split('&');
-            $(".post[" + id[1] + "]").parent().remove()
+            let response = JSON.parse(res);
+            if(response["status"]==="OK")
+                $("#" + response["post_id"]).parent().remove()
+            else
+                $("#error").html(response["error"])
         }
     });
+    return false;
+});
+
+function del_post(id) {
+
+    $.ajax({
+        url: "/blog.php",
+        type: "POST",
+        data: "code=delete_post&post_id="+id+"&submit=",
+        success: function (res) {
+            let response = JSON.parse(res);
+            if(response["status"]==="OK")
+                $("#" + response["post_id"]).parent().remove()
+            else
+                $("#error").html(response["error"])
+        }
+    });
+    return false;
 }

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once "classes/crypter.php";
+require_once "crypter.php";
 class Session
 {
     public $user_id, $username;
