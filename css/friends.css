@@ -15,7 +15,7 @@
   color: red;
   font-weight: bold;
 }
-.del_fr {
+#del_fr_button {
   height: inherit;
   padding: 0 10px 0 10px;
   background-color: indianred;

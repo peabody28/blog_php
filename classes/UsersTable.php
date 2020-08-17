@@ -1,43 +1,39 @@
 <?php
+require_once __DIR__."/Table.php";
 require_once __DIR__."/../db.php";
 
-
-class UsersTable
+class UsersTable implements Table
 {
-    public function insert(User &$user)
+    //signUp
+    public function create($data)
     {
-        $obj = R::dispense("users");
-        $obj->name = $user->name;
-        $obj->password = $user->password;
-        $obj->friends = ($user->friends)?serialize($user->friends):"";
-        return R::store($obj);
+        $new_user = R::dispense("users");
+        $new_user->name = $data->name;
+        $new_user->password = $data->password;
+        $new_user->friends = serialize([]);
+        return R::store($new_user);
     }
 
-    public function search(User &$obj)
+    //Login
+    public function read($data)
     {
-        return R::findOne("users", "name = ? AND password = ?", [$obj->name, $obj->password]);
+        return R::findOne("users", "name = ?", [$data->name]);
     }
 
-    public function search_pair(User &$obj)
+    //Rename etc
+    public function update($data)
     {
-        return R::findOne("users", "name = ?", [$obj->name]);
+
     }
 
-    public function update(User &$obj)
+    //delete
+    public function delete($data)
     {
-        $user = R::findOne("users", "id = ?", [$obj->id]);
-        $user->name = $obj->name;
-        $user->password = $obj->password;
-        $user->friends = serialize($obj->friends);
-        return R::store($user);
+
     }
 
-    public function delete(User &$obj)
+    public function checkingForExistence($name)
     {
-        $user = R::findOne("users", "id = ?", [$obj->id]);
-        if($user)
-            return (R::trash($user))?["status"=>"OK"]:["status"=>"ERROR", "error"=>"Не удалось удалить пользователя"];
-        else
-            return ["status"=>"ERROR", "error"=>"Пользователя не существует"];
+        return R::findOne("users", "name = ?", [$name]);
     }
 }

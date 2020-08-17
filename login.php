@@ -1,28 +1,26 @@
 <?php
-require_once("vendor/autoload.php");
-require_once("classes/User.php");
-require_once("classes/UserTools.php");
-require_once("db.php");
+require_once __DIR__ . "/vendor/autoload.php";
+require_once __DIR__ . "/classes/User.php";
+require_once __DIR__ . "/classes/UserTools.php";
 
 $data = $_POST;
 
-if (isset($data["submit"])) {
-
+if (isset($data["submit"]))
+{
     $user = new User();
     $user->name = strtolower(trim($data["name"]));
     $user->password = trim($data["password"]);
 
-    $tools = new UserTools();
-    $resp = $tools->login($user, isset($data["check"]));
-
-    echo json_encode($resp);
+    $userTools = new UserTools();
+    echo json_encode($userTools->logIn($user, isset($data["check"])));
 }
 else
 {
-    $loader = new Twig\Loader\FilesystemLoader(__DIR__.'/templates');
+    $loader = new Twig\Loader\FilesystemLoader(__DIR__ . '/templates');
     $twig = new Twig\Environment($loader);
+
     echo $twig->render('login.html',
-        ['title'=>"login", 'nm'=>"АВТОРИЗАЦИЯ", 'code'=>"login",
-            'btn_text'=>"ВХОД", 'a_href'=>"/signup.php", 'a_text'=>"Регистрация", "js"=>"/js/login.js"] );
+        ['title' => "login", 'nm' => "АВТОРИЗАЦИЯ",
+            'btn_text' => "Войти", 'a_href' => "/signup.php", 'a_text' => "Регистрация", "js" => "/js/LogIn.js"]);
+
 }
-?>
