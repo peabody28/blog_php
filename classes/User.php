@@ -3,7 +3,7 @@ require_once __DIR__."/../db.php";
 
 class User
 {
-    public $id, $name, $password, $friends, $wall, $existence;
+    public $id, $name, $password, $friends, $wall;
 
     public function __construct($id=null)
     {
@@ -12,22 +12,16 @@ class User
             $user = R::findOne("users", "id = ?", [intval($id)]);
             if ($user)
             {
-                $this->existence = true;
                 $this->id = intval($user->id);
                 $this->name = $user->name;
                 $this->password = $user->password;
             }
-            else
-                $this->existence = false;
         }
-        else
-            $this->existence = false;
-
     }
 
     public function getFriendsList()
     {
-        if($this->existence)
+        if($this->id)
         {
             if(isset($this->friends))
                 return $this->friends;
@@ -43,7 +37,7 @@ class User
         if(isset($this->posts))
             return $this->posts;
 
-        if($this->existence)
+        if($this->id)
         {
             $wall = [];
             $posts = R::findAll("posts", "author_id = ?", [$this->id]);

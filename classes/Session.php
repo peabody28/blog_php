@@ -17,6 +17,10 @@ class Session
         setcookie("id", $crypter->encrypt($this->userId), time()+3600*24*31);
     }
 
-
+    public function delete()
+    {
+        session_destroy();
+        setcookie("id", "", time()-1);
+    }
 
 }

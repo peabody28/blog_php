@@ -21,15 +21,29 @@ class UsersTable implements Table
     }
 
     //Rename etc
-    public function update($data)
+    public function update($data, $column)
     {
-
+        $user = R::findOne("users", "id = ?", [$data->id]);
+        switch ($column)
+        {
+            case "name":
+                $user->name = $data->name;
+                break;
+            case "password":
+                $user->password = $data->password;
+                break;
+            case "friends":
+                $user->friends = serialize($data->friends);
+                break;
+        }
+        R::store($user);
     }
 
-    //delete
     public function delete($data)
     {
-
+        $user = R::findOne("users", "id = ?", [$data->id]);
+        if ($user)
+            return R::trash($user);;
     }
 
     public function checkingForExistence($name)

@@ -5,25 +5,29 @@
   pointer-events: none;
   cursor: default;
 }
-.friend
-{
-  color: green;
-  font-weight: bold;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 
-#mess
+#error
 {
   color: red;
-  font-weight: bold
 }
 
-#del_fr_button
+.friend_name, .send_mess, .remove_friend
 {
-  height: inherit;
-  padding: 0 10px 0 10px;
-  background-color: indianred;
-  color: #f1f1f1;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+}
+.send_mess, .friend_name
+{
+  a
+  {
+    display: flex;
+    align-items: center;
+  }
+}
+#delete_button
+{
+  height: 30px;
+  border: none;
+  background-color: red;
 }

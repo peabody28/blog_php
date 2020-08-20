@@ -1,0 +1,6 @@
+.idea/
+1.php
+/vendorunit-
+tests/
+other/
+.phpunit.result.cache
