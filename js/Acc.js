@@ -1,6 +1,9 @@
 $("#del_account").submit(
     function ()
     {
+        if (!confirm("Удалить"))
+            return false;
+
         console.log($(this).serialize())
         $.ajax
         ({

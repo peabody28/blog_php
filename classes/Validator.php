@@ -28,4 +28,12 @@ class Validator
 
         return ["status"=>"OK"];
     }
+
+    public function validPostData($post)
+    {
+        if (!$post->title or !$post->text)
+            return ["status"=>"ERROR", "error"=>"Заполните все поля"];
+
+        return ["status"=>"OK"];
+    }
 }

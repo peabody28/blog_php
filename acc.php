@@ -14,8 +14,8 @@ if (isset($data["submit"]))
     {
         case "delete_account":
             $user = new User($_SESSION["id"]);
-            $tools = new UserTools();
 
+            $tools = new UserTools();
             echo json_encode($tools->deleteAccount($user));
             break;
     }

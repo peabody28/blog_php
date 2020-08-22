@@ -25,6 +25,7 @@ class User
         {
             if(isset($this->friends))
                 return $this->friends;
+
             $user = R::findOne("users", "id = ?", [$this->id]);
             return unserialize($user->friends);
         }
@@ -40,10 +41,14 @@ class User
         if($this->id)
         {
             $wall = [];
-            $posts = R::findAll("posts", "author_id = ?", [$this->id]);
+            $posts = R::findAll("posts", "author = ?", [$this->id]);
             if ($posts)
                 foreach ($posts as $post)
-                    $wall[] = $post->id;
+                {
+                    $post->tags = unserialize($post->tags);
+                    $wall[] = $post;
+                }
+
             return $wall;
         }
         return null;

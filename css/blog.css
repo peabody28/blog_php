@@ -4,20 +4,10 @@
   pointer-events: none;
   cursor: default;
 }
-#sv {
+#form_block {
   display: none;
 }
-#forma {
-  display: none;
-}
-#forma [name=title],
-#forma [name=text] {
-  width: 100%;
-}
-#forma [name=text] {
-  height: 200px;
-}
-#forma #error {
+#error {
   color: red;
   font-weight: bold;
   width: 100%;
@@ -27,11 +17,15 @@
   margin-bottom: 7px;
 }
 .post {
+  padding: 0;
+}
+.post {
   background-color: #fff;
   border: 1px solid #dcdcdc;
 }
 .post .title,
-.post .text {
+.post .text,
+.post .tags {
   word-wrap: break-word;
 }
 .post .title {
@@ -39,13 +33,67 @@
   border: 1px solid #0f131f;
   justify-content: space-between;
 }
-.post .title #del_p {
-  border: none;
-  height: 30px;
-  width: 100%;
+.post .title .delete {
+  height: inherit;
+}
+.post .title .delete #button {
+  background-color: lightgrey;
+  height: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.post .title .delete #button:hover {
   background-color: indianred;
+  cursor: pointer;
 }
 .post .text {
   min-height: 60px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+.post .tags {
+  opacity: 0.7;
+}
+hr {
+  margin: 0;
+  border: none;
+  background-color: #a5a4a4;
+  height: 1px;
+  box-shadow: 0 5px 10px #6f6f6f;
+}
+#main_hr {
+  display: none;
+}
+.post .row {
+  margin: 0;
+}
+.arrow {
+  width: 20px;
+  height: 20px;
+  border-top: 5px solid #4e4e4e;
+  border-right: 5px solid #4e4e4e;
+}
+.arrow:hover {
+  cursor: pointer;
+}
+#open {
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#open .arrow-bottom {
+  transform: rotate(135deg);
+}
+#close {
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#close .arrow-up {
+  display: none;
+  transform: rotate(-45deg);
 }
 /*# sourceMappingURL=blog.css.map */
