@@ -12,6 +12,8 @@
 }
 #chat {
   background-color: #fff;
+  overflow-y: auto;
+  height: 500px;
 }
 #chat .text {
   word-wrap: break-word;

@@ -28,10 +28,10 @@ $("#add_message").submit(function ()
             success: function (res)
             {
                 let response = JSON.parse(res)
-                console.log(response)
                 if(response["status"]==="OK")
                 {
                     $("#messages").append(response["message_block"])
+                    $("#add_message .error").html("")
                 }
                 else
                     $("#add_message .error").html(response["error"])

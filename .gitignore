@@ -1,6 +1,6 @@
 .idea/
 1.php
 /vendor
-unit-tests/
 other/
 .phpunit.result.cache
+unit-tests

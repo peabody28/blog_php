@@ -12,14 +12,13 @@ if (isset($_GET["id"]))
     if (isset($friend->id))
     {
         $user = new User($_SESSION["id"]);
-        if (in_array( $friend->id, array_column($user->getFriendsList(), "id") ))
+        if (in_array( $friend->id, $user->getFriendsList()))
         {
             $content = "";
             $friendWall = $friend->getPosts();
             $postBlock = new PostBlock();
             foreach ($friendWall as $post)
                 $content .= $postBlock->getHtml($post, true);
-
         }
         elseif ($friend->id == $_SESSION["id"])
             header("Location: /blog.php");

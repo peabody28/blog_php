@@ -4,4 +4,27 @@
   pointer-events: none;
   cursor: default;
 }
+#content {
+  padding: 0;
+}
+#content #trs #tr-red {
+  float: left;
+  width: 0;
+  height: 0;
+  border-top: 25vw solid indianred;
+  border-right: 25vw solid transparent;
+}
+#content #trs #tr-black {
+  float: right;
+  width: 0;
+  height: 0;
+  border-right: 25vw solid #8b8888;
+  border-top: 25vw solid transparent;
+}
+#content #text {
+  position: absolute;
+  top: 12vw;
+  left: 40%;
+  font-size: 24px;
+}
 /*# sourceMappingURL=main2.css.map */

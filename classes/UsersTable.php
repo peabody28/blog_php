@@ -36,18 +36,24 @@ class UsersTable implements Table
                 $user->friends = serialize($data->friends);
                 break;
         }
-        R::store($user);
+        return R::store($user);
     }
 
     public function delete($data)
     {
         $user = R::findOne("users", "id = ?", [$data->id]);
         if ($user)
-            return R::trash($user);;
+            return R::trash($user);
     }
 
-    public function checkingForExistence($name)
+    public function checkingForExistence($user)
     {
-        return R::findOne("users", "name = ?", [$name]);
+        return R::findOne("users", "name = ?", [$user->name]);
+    }
+
+    public function getUsersByFriend($data)
+    {
+        $str = serialize(strval($data->id));
+        return R::findAll("users", "friends LIKE ?", ["%$str%"]);
     }
 }

@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once __DIR__."/Crypter.php";
+
 class Session
 {
     public $userId, $userName;
@@ -21,6 +22,11 @@ class Session
     {
         session_destroy();
         setcookie("id", "", time()-1);
+    }
+
+    public function update()
+    {
+        $_SESSION["name"] = $this->userName;
     }
 
 }

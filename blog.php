@@ -10,29 +10,32 @@ auth();
 $data = $_POST;
 
 if (isset($data["submit"]))
+{
     switch ($data["code"])
     {
         case "add_post":
             $post = new Post();
             $post->title = isset($data["title"]) ? htmlspecialchars(trim($data["title"])) : null;
             $post->text = isset($data["text"]) ? htmlspecialchars(trim($data["text"])) : null;
+
             $tags = explode(" ", $data["tags"]);
             array_walk( $tags, function (&$item){$item = htmlspecialchars(trim($item));});
-            $post->tags =($tags) ? array_filter($tags, function ($elem) {return (bool)$elem;}) : null;
+
+            $post->tags = ($tags) ? array_filter($tags, function ($elem) {return (bool)$elem;}) : null;
             $post->author = $_SESSION["id"];
 
             $tools = new PostTools();
             echo json_encode($tools->addPost($post));
-
             break;
 
         case "remove_post":
             $post = new Post($data["id"]);
-            $tools = new PostTools();
 
+            $tools = new PostTools();
             echo json_encode($tools->removePost($post));
             break;
     }
+}
 else
 {
     $user = new User($_SESSION["id"]);

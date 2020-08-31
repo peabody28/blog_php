@@ -4,19 +4,9 @@
   pointer-events: none;
   cursor: default;
 }
-.notif {
-  background-color: #fff;
-  justify-content: space-between;
-}
-.delete_notif {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: inherit;
-  width: 25px;
+.notif_block #delete_button {
+  height: 30px;
+  border: none;
   background-color: indianred;
-}
-.delete_notif:hover {
-  cursor: pointer;
 }
 /*# sourceMappingURL=notif.css.map */

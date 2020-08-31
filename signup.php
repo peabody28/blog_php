@@ -9,7 +9,7 @@ if (isset($data["submit"]))
 {
     $user = new User();
     $user->name = strtolower(trim($data["name"]));
-    $user->password = trim($data["password"]);
+    $user->password = md5(md5(trim($data["password"])));
 
     $userTools = new UserTools();
     echo json_encode($userTools->signUp($user, isset($data["check"])));

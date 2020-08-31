@@ -30,4 +30,9 @@ class MessagesTable implements Table
     {
         // TODO: Implement delete() method.
     }
+
+    public function getMessagesByAuthor($data)
+    {
+        return R::findAll("messages", "(author = ? AND target = ?) OR (author = ? AND target = ?)", [$data->author, $data->target, $data->target, $data->author]);
+    }
 }

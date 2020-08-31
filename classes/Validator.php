@@ -12,7 +12,7 @@ class Validator
             return ["status"=>"ERROR", "error"=>"Имя содержит запрещенные символы"];
 
         $table = new UsersTable();
-        if ($table->checkingForExistence($user->name))
+        if ($table->checkingForExistence($user))
             return ["status"=>"ERROR", "error"=>"Пользователь с таким именем существует"];
 
         return ["status"=>"OK"];
@@ -33,6 +33,21 @@ class Validator
     {
         if (!$post->title or !$post->text)
             return ["status"=>"ERROR", "error"=>"Заполните все поля"];
+
+        return ["status"=>"OK"];
+    }
+
+    public function validRenameData($user)
+    {
+        if (!$user->name)
+            return ["status"=>"ERROR", "error"=>"Имя не введено"];
+
+        if (!preg_match("/[a-zA-Z0-9_]+/", $user->name))
+            return ["status"=>"ERROR", "error"=>"Имя содержит запрещенные символы"];
+
+        $table = new UsersTable();
+        if ($table->checkingForExistence($user))
+            return ["status"=>"ERROR", "error"=>"Пользователь с таким именем существует"];
 
         return ["status"=>"OK"];
     }

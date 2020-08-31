@@ -9,6 +9,7 @@ if (isset($data["submit"]))
     $session->userName = $_SESSION["name"];
 
     $session->delete();
+    header("Location: /login.php");
 }
 else
     echo 'Что-то пошло не так';

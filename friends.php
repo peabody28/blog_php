@@ -14,31 +14,24 @@ if (isset($data["submit"]))
     {
         case "add_friend":
             $user = new User($_SESSION["id"]);
+
             $friend = new User();
             $friend->name = strtolower(trim($data["name"]));
 
             $userTools = new UserTools();
             $response = $userTools->addToFriends($user, $friend);
-            if ($response["status"]==="OK")
-            {
-                $friendBlock = new FriendBlock();
-                echo json_encode(["status"=>"OK", "friend_block"=>$friendBlock->getHtml($friend)]);
-            }
-            else
-                echo json_encode($response);
+            echo json_encode($response);
             break;
 
         case "remove_friend":
             $user = new User($_SESSION["id"]);
             $user->friends = $user->getFriendsList();
+
             $friend = new User($data["id"]);
 
             $userTools = new UserTools();
             $response = $userTools->removeFromFriends($user, $friend);
-            if ($response["status"]==="OK")
-                echo json_encode(["status"=>"OK", "id"=>$friend->id]);
-            else
-                echo json_encode($response);
+            echo json_encode($response);
             break;
     }
 }
@@ -51,13 +44,13 @@ else
     $friends = $user->getFriendsList();
 
     $friendBlock = new FriendBlock();
-    foreach ($friends as $user)
+    foreach ($friends as $friendId)
     {
-        $friend = new User();
-        $friend->id = $user["id"];
-        $friend->name = $user["name"];
-        $friendsBlocks .= $friendBlock->getHtml($friend);
+        $friend = new User($friendId);
+        if ($friend->id)
+            $friendsBlocks .= $friendBlock->getHtml($friend);
     }
+
     $content =
         "<form id='add_friend' method='POST'>
             <input type='hidden' name='submit'>
