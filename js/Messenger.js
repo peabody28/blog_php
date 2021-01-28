@@ -1,5 +1,6 @@
 $("#get_chat_by_name").submit(function ()
 {
+    console.log($(this).serialize())
     $.ajax(
         {
             url: "/messenger.php",

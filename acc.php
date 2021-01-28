@@ -20,7 +20,7 @@ if (isset($data["submit"]))
             break;
         case "rename":
             $user = new User($_SESSION["id"]);
-            $user->name = strtolower(trim($data["name"]));
+            $user->name = trim($data["name"]);
 
             $tools = new UserTools();
             echo json_encode($tools->rename($user));

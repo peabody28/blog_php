@@ -8,7 +8,7 @@ $data = $_POST;
 if (isset($data["submit"]))
 {
     $user = new User();
-    $user->name = strtolower(trim($data["name"]));
+    $user->name = trim($data["name"]);
     $user->password = md5(md5(trim($data["password"])));
 
     $userTools = new UserTools();
